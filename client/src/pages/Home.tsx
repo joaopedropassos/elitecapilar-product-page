@@ -20,23 +20,23 @@ import { toast } from "sonner";
 const gallery = [
   {
     label: "Frontal",
-    src: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=1200&q=88",
-    position: "center 24%",
+    src: "/manus-storage/product-main-v2_4dea0895.jpg",
+    position: "center center",
   },
   {
     label: "Perfil",
-    src: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=1000&q=88",
-    position: "center 18%",
+    src: "/manus-storage/product-detail-v2_5db35ab0.jpg",
+    position: "center center",
   },
   {
     label: "Textura",
-    src: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=1000&q=88",
-    position: "center 25%",
+    src: "/manus-storage/product-main-v2_4dea0895.jpg",
+    position: "center 30%",
   },
   {
     label: "Acabamento",
-    src: "https://images.unsplash.com/photo-1521119989659-a83eee488004?auto=format&fit=crop&w=1000&q=88",
-    position: "center 18%",
+    src: "/manus-storage/product-detail-v2_5db35ab0.jpg",
+    position: "center 65%",
   },
 ];
 
@@ -243,8 +243,8 @@ export default function Home() {
                   <span className="mb-1 text-[12px] font-medium text-[#786c5c]">Sua aparência</span>
                 </div>
                 <div className="grid grid-cols-2 gap-2.5">
-                  <MiniPortrait src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=720&q=88" label="Antes" position="center 24%" />
-                  <MiniPortrait src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=720&q=88" label="Depois" position="center 18%" />
+                  <MiniPortrait src="/manus-storage/customer-before-v2_ab22520f.jpg" label="Antes" position="center center" />
+                  <MiniPortrait src="/manus-storage/customer-after-v2_b607e824.jpg" label="Depois" position="center center" />
                 </div>
                 <div className="mt-3 flex items-center justify-between text-[10px] text-[#7f7466]">
                   <span>Cliente real · resultado individual</span>
