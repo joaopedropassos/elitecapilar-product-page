@@ -6,6 +6,7 @@ import {
   ChevronDown,
   ChevronLeft,
   ChevronRight,
+  Copy,
   Heart,
   Menu,
   Search,
@@ -93,8 +94,9 @@ export default function Home() {
   const [promoOpen, setPromoOpen] = useState(false);
   const [promoEmail, setPromoEmail] = useState("");
   const [promoEmailConfirmation, setPromoEmailConfirmation] = useState("");
+  const [pixPayment, setPixPayment] = useState<{ paymentId: number; status: string; qrCodeBase64: string; qrCode: string; ticketUrl: string | null } | null>(null);
   const checkoutMutation = trpc.payments.createCheckout.useMutation();
-  const promoMutation = trpc.payments.createPromotionalPixCheckout.useMutation();
+  const pixPaymentMutation = trpc.payments.createPromotionalPixPayment.useMutation();
 
   const activePhoto = useMemo(() => gallery[activeImage], [activeImage]);
 
@@ -124,11 +126,17 @@ export default function Home() {
       return;
     }
     try {
-      const checkout = await promoMutation.mutateAsync({ email });
-      window.location.assign(checkout.checkoutUrl);
+      const payment = await pixPaymentMutation.mutateAsync({ email });
+      setPixPayment(payment);
     } catch {
-      toast.error("Não foi possível abrir a oferta Pix", { description: "Tente novamente em alguns instantes.", duration: 3200 });
+      toast.error("Não foi possível gerar o QR Code Pix", { description: "Tente novamente em alguns instantes.", duration: 3200 });
     }
+  };
+
+  const handleCopyPix = async () => {
+    if (!pixPayment) return;
+    await navigator.clipboard.writeText(pixPayment.qrCode);
+    toast.success("Código Pix copiado", { duration: 2200 });
   };
 
   return (
@@ -449,15 +457,29 @@ export default function Home() {
           <section className="promo-modal" role="dialog" aria-modal="true" aria-labelledby="promo-title">
             <button className="promo-modal-close" onClick={() => setPromoOpen(false)} aria-label="Fechar oferta"><X size={18} /></button>
             <p className="eyebrow mb-2">Oferta Pix · Mercado Pago</p>
-            <h2 id="promo-title" className="font-serif text-[30px] leading-none tracking-[-.03em]">Confirme seu e-mail</h2>
-            <p className="mt-3 text-[13px] leading-[1.65] text-[#756e64]">Vamos usar este e-mail para identificar seu pedido no Mercado Pago. Digite-o duas vezes para confirmar antes de continuar.</p>
-            <div className="mt-6 grid gap-3">
-              <label className="promo-field"><span>Seu e-mail</span><input type="email" value={promoEmail} onChange={(event) => setPromoEmail(event.target.value)} placeholder="voce@exemplo.com" autoFocus /></label>
-              <label className="promo-field"><span>Confirme seu e-mail</span><input type="email" value={promoEmailConfirmation} onChange={(event) => setPromoEmailConfirmation(event.target.value)} placeholder="Digite novamente" onKeyDown={(event) => event.key === "Enter" && handlePromotionalCheckout()} /></label>
-            </div>
-            <div className="promo-modal-summary"><span>Oferta promocional Pix</span><strong>R$ 499,00</strong></div>
-            <button onClick={handlePromotionalCheckout} disabled={promoMutation.isPending} className="cta-button mt-5">{promoMutation.isPending ? "Abrindo Mercado Pago..." : "Continuar para pagar via Pix"}<ArrowRight size={17} /></button>
-            <p className="promo-modal-footnote"><ShieldCheck size={14} /> Você confirmará o pagamento dentro do Mercado Pago</p>
+            {pixPayment ? (
+              <>
+                <h2 id="promo-title" className="font-serif text-[30px] leading-none tracking-[-.03em]">Pix gerado</h2>
+                <p className="mt-3 text-[13px] leading-[1.65] text-[#756e64]">Escaneie o QR Code no app do seu banco ou copie o código abaixo. A confirmação aparecerá após o Mercado Pago processar o pagamento.</p>
+                <div className="pix-qr-wrap"><img src={`data:image/png;base64,${pixPayment.qrCodeBase64}`} alt="QR Code para pagamento Pix de R$ 499,00" /></div>
+                <div className="pix-code-box"><span>{pixPayment.qrCode}</span><button onClick={handleCopyPix} className="pix-copy-button" aria-label="Copiar código Pix"><Copy size={15} /> Copiar</button></div>
+                <div className="promo-modal-summary"><span>Oferta promocional Pix</span><strong>R$ 499,00</strong></div>
+                {pixPayment.ticketUrl && <a className="pix-open-link" href={pixPayment.ticketUrl} target="_blank" rel="noreferrer">Abrir instruções de pagamento <ArrowRight size={15} /></a>}
+                <p className="promo-modal-footnote"><ShieldCheck size={14} /> Pagamento confirmado pelo webhook do Mercado Pago</p>
+              </>
+            ) : (
+              <>
+                <h2 id="promo-title" className="font-serif text-[30px] leading-none tracking-[-.03em]">Confirme seu e-mail</h2>
+                <p className="mt-3 text-[13px] leading-[1.65] text-[#756e64]">Vamos usar este e-mail para identificar seu pedido no Mercado Pago. Digite-o duas vezes para confirmar antes de continuar.</p>
+                <div className="mt-6 grid gap-3">
+                  <label className="promo-field"><span>Seu e-mail</span><input type="email" value={promoEmail} onChange={(event) => setPromoEmail(event.target.value)} placeholder="voce@exemplo.com" autoFocus /></label>
+                  <label className="promo-field"><span>Confirme seu e-mail</span><input type="email" value={promoEmailConfirmation} onChange={(event) => setPromoEmailConfirmation(event.target.value)} placeholder="Digite novamente" onKeyDown={(event) => event.key === "Enter" && handlePromotionalCheckout()} /></label>
+                </div>
+                <div className="promo-modal-summary"><span>Oferta promocional Pix</span><strong>R$ 499,00</strong></div>
+                <button onClick={handlePromotionalCheckout} disabled={pixPaymentMutation.isPending} className="cta-button mt-5">{pixPaymentMutation.isPending ? "Gerando QR Code..." : "Gerar QR Code Pix"}<ArrowRight size={17} /></button>
+                <p className="promo-modal-footnote"><ShieldCheck size={14} /> Você confirmará o pagamento no seu banco</p>
+              </>
+            )}
           </section>
         </div>
       )}

@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { createMercadoPagoPreference, createPromotionalPixPreference } from "./mercadopago";
+import { createMercadoPagoPreference, createPromotionalPixPayment, createPromotionalPixPreference } from "./mercadopago";
 
 afterEach(() => vi.unstubAllGlobals());
 
@@ -54,5 +54,25 @@ describe("Mercado Pago Checkout Pro", () => {
     expect(payload.items[0]?.unit_price).toBe(499);
     expect(payload.payment_methods.default_payment_method_id).toBe("pix");
     expect(payload.payment_methods.excluded_payment_types.map((item) => item.id)).toContain("credit_card");
+  });
+
+  it("returns QR Code and copia e cola data for a pending Pix payment", async () => {
+    const fetchMock = vi.fn().mockResolvedValue(new Response(JSON.stringify({
+      id: 987654,
+      status: "pending",
+      point_of_interaction: {
+        transaction_data: {
+          qr_code_base64: "cXItcG5n",
+          qr_code: "000201pix-copia-e-cola",
+          ticket_url: "https://www.mercadopago.com.br/pix/ticket/987654",
+        },
+      },
+    }), { status: 201, headers: { "Content-Type": "application/json" } }));
+    vi.stubGlobal("fetch", fetchMock);
+
+    const result = await createPromotionalPixPayment("cliente@example.com");
+
+    expect(result).toMatchObject({ paymentId: 987654, status: "pending", qrCodeBase64: "cXItcG5n", qrCode: "000201pix-copia-e-cola" });
+    expect(fetchMock.mock.calls[0]?.[0]).toContain("/v1/payments");
   });
 });

@@ -155,6 +155,50 @@ export async function createPromotionalPixPreference(email: string) {
   };
 }
 
+export async function createPromotionalPixPayment(email: string) {
+  const externalReference = `elitecapilar-pix-payment-499-${Date.now()}-${crypto.randomUUID().slice(0, 8)}`;
+  const response = await mercadoPagoFetch(`${MERCADO_PAGO_API}/v1/payments`, {
+    method: "POST",
+    headers: {
+      ...mercadoPagoHeaders(),
+      "X-Idempotency-Key": externalReference,
+    },
+    body: JSON.stringify({
+      transaction_amount: 499,
+      description: "Sistema Capilar Micro-Stubble · Oferta Pix",
+      payment_method_id: "pix",
+      payer: { email },
+      notification_url: `${ENV.publicSiteUrl}/api/mercadopago/webhook`,
+      external_reference: externalReference,
+      metadata: { offer: "pix499", customer_email: email },
+    }),
+  });
+
+  if (!response.ok) {
+    const errorBody = await response.text();
+    console.error("[Mercado Pago] Promotional Pix payment failed", response.status, errorBody.slice(0, 500));
+    throw new Error("Não foi possível gerar o QR Code Pix");
+  }
+
+  const payment = await response.json() as {
+    id?: number;
+    status?: string;
+    point_of_interaction?: { transaction_data?: { qr_code_base64?: string; qr_code?: string; ticket_url?: string } };
+  };
+  const transactionData = payment.point_of_interaction?.transaction_data;
+  if (!payment.id || payment.status !== "pending" || !transactionData?.qr_code_base64 || !transactionData.qr_code) {
+    throw new Error("O Mercado Pago não retornou os dados do Pix");
+  }
+
+  return {
+    paymentId: payment.id,
+    status: payment.status,
+    qrCodeBase64: transactionData.qr_code_base64,
+    qrCode: transactionData.qr_code,
+    ticketUrl: transactionData.ticket_url ?? null,
+  };
+}
+
 export function registerMercadoPagoWebhook(app: Express) {
   app.post("/api/mercadopago/webhook", async (req, res) => {
     // Acknowledge immediately so Mercado Pago does not retry while we inspect the event.
