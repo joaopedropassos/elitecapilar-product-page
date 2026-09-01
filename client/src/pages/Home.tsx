@@ -57,9 +57,12 @@ const testimonials = [
 
 const marketplaceProducts = [
   { title: "Prótese Capilar Fios Implantados em Nó Duplo", image: "/manus-storage/mercado-livre-no-duplo_927f073e.webp", price: "R$ 658,68", oldPrice: "R$ 998", installments: "10x R$ 65,87 sem juros", detail: "Todas as cores · nó duplo", code: "X2B1NG-A2VP", url: "https://meli.la/24VPrD7" },
-  { title: "Prótese Capilar Masculina 100% Cabelo Humano", image: "/manus-storage/ml-catalog-1_c415ad3d.webp", price: "R$ 668,33", oldPrice: "R$ 899", installments: "10x R$ 66,83 sem juros", detail: "Base 20x25 cm · densidade 120–130%", code: "MLB-2221172385", url: "https://produto.mercadolivre.com.br/MLB-2221172385-protese-capilar-masculina-fios-fixados-em-no-100-humanos-_JM" },
-  { title: "Prótese Capilar New Australia Híbrida", image: "/manus-storage/ml-catalog-2_beff37d1.webp", price: "R$ 767,36", oldPrice: "R$ 1.199", installments: "10x R$ 76,74 sem juros", detail: "Nó duplo · todas as cores", code: "MLB-4281886453", url: "https://produto.mercadolivre.com.br/MLB-4281886453-protese-capilar-new-australia-hibrida-no-duplo-todas-cores-_JM" },
+  { title: "Prótese Capilar New Australia Híbrida", image: "/manus-storage/ml-catalog-2_beff37d1.webp", price: "R$ 767,36", oldPrice: "R$ 1.199", installments: "10x R$ 76,74 sem juros", detail: "Nó duplo · todas as cores", code: "X2B1NG-JQYY", url: "https://meli.la/1gDTTRF" },
   { title: "Prótese Capilar Nó Duplo + Fita Gold", image: "/manus-storage/ml-catalog-3_7dc06129.webp", price: "R$ 632,04", oldPrice: "R$ 1.200", installments: "10x R$ 68,70 sem juros", detail: "Cabelo humano · base 20x25 cm", code: "MLBU3024570310", url: "https://meli.la/2CTt8JN" },
+  { title: "Prótese Capilar Castanho Escuro 20% Grisalho", image: "/manus-storage/affiliate-grisalho_61ab78b0.webp", price: "R$ 1.102,00", oldPrice: "R$ 1.185", installments: "10x R$ 118,59 sem juros", detail: "Fios injetados · base 20x25 cm", code: "X2B1NG-L47U", url: "https://meli.la/1huAFeJ" },
+  { title: "Prótese Capilar Micropele 10% Grisalho", image: "/manus-storage/affiliate-micropele-10_27f58e91.webp", price: "R$ 412,00", oldPrice: "", installments: "12x R$ 39,84", detail: "Fio injetado · castanho escuro", code: "X2B1NG-P1N0", url: "https://meli.la/2syutfi" },
+  { title: "Prótese Capilar Híbrida Respirável", image: "/manus-storage/affiliate-hibrida_10b6d528.webp", price: "R$ 284,90", oldPrice: "R$ 299,90", installments: "6x R$ 49,98 sem juros", detail: "Cabelo humano · tamanho 17x22", code: "X2B1NG-CTNB", url: "https://meli.la/1F8ieh5" },
+  { title: "Kit 2 Próteses Capilares Orgânicas", image: "/manus-storage/affiliate-kit2_15041905.webp", price: "R$ 29,68", oldPrice: "", installments: "Consulte condições no anúncio", detail: "Kit com 2 unidades · cabelo liso", code: "X2B1NG-S8F4", url: "https://meli.la/126mQdE" },
 ];
 
 function StarRating() {
@@ -426,7 +429,7 @@ export default function Home() {
         <section className="marketplace-catalog" aria-labelledby="mercado-livre-title">
           <div className="catalog-heading">
             <div><p className="eyebrow mb-2">Catálogo no Mercado Livre</p><h2 id="mercado-livre-title" className="section-title">Mais opções para o seu estilo</h2></div>
-            <p>Compra, entrega e condições processadas diretamente pelo Mercado Livre.</p>
+            <p>Links comissionados: podemos receber comissão, sem custo adicional para você. Compra e entrega são processadas pelo Mercado Livre.</p>
           </div>
           <div className="marketplace-grid">
             {marketplaceProducts.map((product) => (
@@ -446,7 +449,7 @@ export default function Home() {
               </article>
             ))}
           </div>
-          <p className="marketplace-note">Preços, estoque, frete e condições foram consultados no Mercado Livre e podem mudar no anúncio.</p>
+          <p className="marketplace-note">Todos os botões usam os links comissionados fornecidos. Preços, estoque, frete e condições podem mudar no anúncio.</p>
         </section>
 
         <section className="testimonials-section" aria-labelledby="depoimentos-title">

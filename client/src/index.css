@@ -341,6 +341,7 @@ a { color: inherit; text-decoration: none; }
 .marketplace-detail { margin: 10px 0 16px; color: #898076; font-size: 10px; line-height: 1.5; }
 .marketplace-price { display: flex; align-items: baseline; gap: 8px; margin-top: auto; }
 .marketplace-price span { color: #a1988d; font-size: 10px; text-decoration: line-through; }
+.marketplace-price span:empty { display: none; }
 .marketplace-price strong { color: #2f2c27; font-family: "DM Serif Display", Georgia, serif; font-size: 23px; font-weight: 400; }
 .marketplace-installments { margin: 3px 0 14px; color: #71695f; font-size: 9px; }
 .marketplace-button { display: inline-flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 11px 13px; border-radius: 7px; background: #2d3277; color: #fff; font-size: 10px; font-weight: 800; transition: transform .2s ease, background .2s ease; }
