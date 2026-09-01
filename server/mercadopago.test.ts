@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { createMercadoPagoPreference } from "./mercadopago";
+import { createMercadoPagoPreference, createPromotionalPixPreference } from "./mercadopago";
 
 afterEach(() => vi.unstubAllGlobals());
 
@@ -32,5 +32,27 @@ describe("Mercado Pago Checkout Pro", () => {
     expect(payload.items[0]).toMatchObject({ unit_price: 1250, currency_id: "BRL" });
     expect(payload.back_urls.success).toContain("payment=success");
     expect(payload.notification_url).toContain("/api/mercadopago/webhook");
+  });
+
+  it("creates the R$ 499 promotional preference for a confirmed payer email", async () => {
+    const fetchMock = vi.fn().mockResolvedValue(new Response(JSON.stringify({
+      id: "promo-pref-123",
+      init_point: "https://www.mercadopago.com.br/checkout/v1/redirect?pref_id=promo-pref-123",
+    }), { status: 201, headers: { "Content-Type": "application/json" } }));
+    vi.stubGlobal("fetch", fetchMock);
+
+    const result = await createPromotionalPixPreference("cliente@example.com");
+    const options = fetchMock.mock.calls[0]?.[1] as RequestInit;
+    const payload = JSON.parse(String(options.body)) as {
+      payer: { email: string };
+      items: Array<{ unit_price: number }>;
+      payment_methods: { default_payment_method_id: string; excluded_payment_types: Array<{ id: string }> };
+    };
+
+    expect(result.checkoutUrl).toContain("mercadopago.com.br");
+    expect(payload.payer.email).toBe("cliente@example.com");
+    expect(payload.items[0]?.unit_price).toBe(499);
+    expect(payload.payment_methods.default_payment_method_id).toBe("pix");
+    expect(payload.payment_methods.excluded_payment_types.map((item) => item.id)).toContain("credit_card");
   });
 });

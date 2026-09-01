@@ -81,6 +81,60 @@ export async function createMercadoPagoPreference(quantity = 1) {
   };
 }
 
+export async function createPromotionalPixPreference(email: string) {
+  const externalReference = `elitecapilar-pix-499-${Date.now()}-${crypto.randomUUID().slice(0, 8)}`;
+  const siteUrl = ENV.publicSiteUrl;
+  const response = await fetch(`${MERCADO_PAGO_API}/checkout/preferences`, {
+    method: "POST",
+    headers: mercadoPagoHeaders(),
+    body: JSON.stringify({
+      items: [{
+        id: "elitecapilar-micro-stubble-pix-promo",
+        title: "Sistema Capilar Micro-Stubble · Oferta Pix",
+        description: "Oferta promocional com pagamento exclusivo via Pix",
+        quantity: 1,
+        currency_id: "BRL",
+        unit_price: 499,
+      }],
+      payer: { email },
+      back_urls: {
+        success: `${siteUrl}/?payment=success&offer=pix499`,
+        failure: `${siteUrl}/?payment=failure&offer=pix499`,
+        pending: `${siteUrl}/?payment=pending&offer=pix499`,
+      },
+      auto_return: "approved",
+      notification_url: `${siteUrl}/api/mercadopago/webhook`,
+      external_reference: externalReference,
+      metadata: { offer: "pix499", customer_email: email },
+      payment_methods: {
+        default_payment_method_id: "pix",
+        excluded_payment_types: [
+          { id: "credit_card" },
+          { id: "debit_card" },
+          { id: "ticket" },
+          { id: "atm" },
+        ],
+      },
+    }),
+  });
+
+  if (!response.ok) {
+    const errorBody = await response.text();
+    console.error("[Mercado Pago] Promotional Pix preference failed", response.status, errorBody.slice(0, 500));
+    throw new Error("Não foi possível criar o link promocional Pix");
+  }
+
+  const preference = await response.json() as { id?: string; init_point?: string; sandbox_init_point?: string; external_reference?: string };
+  const checkoutUrl = preference.init_point ?? preference.sandbox_init_point;
+  if (!checkoutUrl) throw new Error("O Mercado Pago não retornou o link promocional Pix");
+
+  return {
+    preferenceId: preference.id ?? null,
+    checkoutUrl,
+    externalReference: preference.external_reference ?? externalReference,
+  };
+}
+
 export function registerMercadoPagoWebhook(app: Express) {
   app.post("/api/mercadopago/webhook", async (req, res) => {
     // Acknowledge immediately so Mercado Pago does not retry while we inspect the event.

@@ -84,7 +84,11 @@ export default function Home() {
   const [wishlist, setWishlist] = useState(false);
   const [cartCount, setCartCount] = useState(0);
   const [search, setSearch] = useState("");
+  const [promoOpen, setPromoOpen] = useState(false);
+  const [promoEmail, setPromoEmail] = useState("");
+  const [promoEmailConfirmation, setPromoEmailConfirmation] = useState("");
   const checkoutMutation = trpc.payments.createCheckout.useMutation();
+  const promoMutation = trpc.payments.createPromotionalPixCheckout.useMutation();
 
   const activePhoto = useMemo(() => gallery[activeImage], [activeImage]);
 
@@ -104,6 +108,21 @@ export default function Home() {
   const handleRelatedSearch = (value: string) => {
     setSearch(value);
     toast.info(`Buscando por “${value}”`, { duration: 2200 });
+  };
+
+  const handlePromotionalCheckout = async () => {
+    const email = promoEmail.trim().toLowerCase();
+    const confirmation = promoEmailConfirmation.trim().toLowerCase();
+    if (!email || email !== confirmation) {
+      toast.error("Confirme o mesmo e-mail nos dois campos", { duration: 3000 });
+      return;
+    }
+    try {
+      const checkout = await promoMutation.mutateAsync({ email });
+      window.location.assign(checkout.checkoutUrl);
+    } catch {
+      toast.error("Não foi possível abrir a oferta Pix", { description: "Tente novamente em alguns instantes.", duration: 3200 });
+    }
   };
 
   return (
@@ -204,6 +223,15 @@ export default function Home() {
           <ChevronRight size={13} />
           <span className="truncate">Sistema Capilar de Micro-Stubble Aero-Densidade - Efeito Careca por Fazer</span>
         </div>
+
+        <section className="promo-banner mb-8" aria-label="Oferta promocional Pix">
+          <div className="promo-copy">
+            <div className="promo-kicker"><span className="promo-live-dot" /> Oferta exclusiva · tempo limitado</div>
+            <h2>Seu novo visual por <strong>R$ 499,00 no Pix</strong></h2>
+            <p>Condição especial para a primeira compra. Pagamento processado com segurança pelo Mercado Pago.</p>
+          </div>
+          <button onClick={() => setPromoOpen(true)} className="promo-button">Garantir oferta <ArrowRight size={16} /></button>
+        </section>
 
         <div className="mb-7 max-w-4xl animate-fade-up lg:hidden">
           <p className="eyebrow mb-3">Coleção Micro-Stubble · 2025</p>
@@ -373,6 +401,24 @@ export default function Home() {
           </aside>
         </div>
       </main>
+
+      {promoOpen && (
+        <div className="promo-modal-backdrop" role="presentation" onMouseDown={(event) => event.target === event.currentTarget && setPromoOpen(false)}>
+          <section className="promo-modal" role="dialog" aria-modal="true" aria-labelledby="promo-title">
+            <button className="promo-modal-close" onClick={() => setPromoOpen(false)} aria-label="Fechar oferta"><X size={18} /></button>
+            <p className="eyebrow mb-2">Oferta Pix · Mercado Pago</p>
+            <h2 id="promo-title" className="font-serif text-[30px] leading-none tracking-[-.03em]">Confirme seu e-mail</h2>
+            <p className="mt-3 text-[13px] leading-[1.65] text-[#756e64]">Vamos usar este e-mail para identificar seu pedido no Mercado Pago. Digite-o duas vezes para confirmar antes de continuar.</p>
+            <div className="mt-6 grid gap-3">
+              <label className="promo-field"><span>Seu e-mail</span><input type="email" value={promoEmail} onChange={(event) => setPromoEmail(event.target.value)} placeholder="voce@exemplo.com" autoFocus /></label>
+              <label className="promo-field"><span>Confirme seu e-mail</span><input type="email" value={promoEmailConfirmation} onChange={(event) => setPromoEmailConfirmation(event.target.value)} placeholder="Digite novamente" onKeyDown={(event) => event.key === "Enter" && handlePromotionalCheckout()} /></label>
+            </div>
+            <div className="promo-modal-summary"><span>Oferta promocional Pix</span><strong>R$ 499,00</strong></div>
+            <button onClick={handlePromotionalCheckout} disabled={promoMutation.isPending} className="cta-button mt-5">{promoMutation.isPending ? "Abrindo Mercado Pago..." : "Continuar para pagar via Pix"}<ArrowRight size={17} /></button>
+            <p className="promo-modal-footnote"><ShieldCheck size={14} /> Você confirmará o pagamento dentro do Mercado Pago</p>
+          </section>
+        </div>
+      )}
 
       <a href="#whatsapp" className="whatsapp-fab" aria-label="Falar com a EliteCapilar no WhatsApp" onClick={() => toast.success("Abrindo atendimento EliteCapilar") }>
         <span className="whatsapp-ring" />

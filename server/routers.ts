@@ -2,7 +2,7 @@ import { COOKIE_NAME } from "@shared/const";
 import { getSessionCookieOptions } from "./_core/cookies";
 import { systemRouter } from "./_core/systemRouter";
 import { publicProcedure, router } from "./_core/trpc";
-import { createMercadoPagoPreference } from "./mercadopago";
+import { createMercadoPagoPreference, createPromotionalPixPreference } from "./mercadopago";
 import { z } from "zod";
 
 export const appRouter = router({
@@ -23,6 +23,9 @@ export const appRouter = router({
     createCheckout: publicProcedure
       .input(z.object({ quantity: z.number().int().min(1).max(10).default(1) }))
       .mutation(({ input }) => createMercadoPagoPreference(input.quantity)),
+    createPromotionalPixCheckout: publicProcedure
+      .input(z.object({ email: z.string().trim().email() }))
+      .mutation(({ input }) => createPromotionalPixPreference(input.email)),
   }),
 
   // TODO: add feature routers here, e.g.
