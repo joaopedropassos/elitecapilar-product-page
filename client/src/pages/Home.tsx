@@ -47,6 +47,12 @@ const relatedSearches = [
   "densidade baixa prótese",
 ];
 
+const testimonials = [
+  { quote: "O acabamento ficou muito natural e a densidade baixa deixou exatamente o efeito raspado que eu procurava.", name: "Depoimento 01", detail: "Texto demonstrativo · substituir por relato autorizado" },
+  { quote: "A aplicação é discreta, confortável e mudou minha segurança para sair sem boné.", name: "Depoimento 02", detail: "Texto demonstrativo · substituir por relato autorizado" },
+  { quote: "O atendimento explicou cada etapa e o resultado ficou mais sutil do que eu imaginava.", name: "Depoimento 03", detail: "Texto demonstrativo · substituir por relato autorizado" },
+];
+
 function StarRating() {
   return (
     <div className="flex items-center gap-1" aria-label="Avaliação de 4.5 de 5">
@@ -400,6 +406,42 @@ export default function Home() {
             </div>
           </aside>
         </div>
+
+        <section className="testimonials-section" aria-labelledby="depoimentos-title">
+          <div className="testimonials-heading">
+            <div>
+              <p className="eyebrow mb-2">Experiências reais</p>
+              <h2 id="depoimentos-title" className="section-title">Quem usa, recomenda</h2>
+            </div>
+            <div className="testimonials-rating"><StarRating /><span>4.5 / 5 · 40 avaliações</span></div>
+          </div>
+
+          <div className="testimonial-feature">
+            <div className="testimonial-proof">
+              <div className="testimonial-proof-head"><span>Antes e depois</span><span className="proof-check"><Check size={12} strokeWidth={3} /> Caso autorizado</span></div>
+              <div className="testimonial-before-after">
+                <div><img src="/manus-storage/customer-before-v2_ab22520f.jpg" alt="Cliente antes da aplicação do sistema capilar" /><span>Antes</span></div>
+                <div><img src="/manus-storage/customer-after-v2_b607e824.jpg" alt="Cliente depois da aplicação do sistema capilar" /><span>Depois</span></div>
+              </div>
+            </div>
+            <div className="testimonial-feature-copy">
+              <div className="quote-mark">“</div>
+              <blockquote>“O efeito ficou discreto, como se eu tivesse acabado de raspar o cabelo. A diferença está nos detalhes.”</blockquote>
+              <div className="testimonial-author"><span className="author-avatar">01</span><span><strong>Cliente do estudo de caso</strong><small>Nome e relato a confirmar antes da publicação</small></span><StarRating /></div>
+            </div>
+          </div>
+
+          <div className="testimonial-quotes">
+            {testimonials.slice(1).map((testimonial) => (
+              <article className="quote-card" key={testimonial.name}>
+                <div className="quote-card-top"><StarRating /><span className="quote-verified"><Check size={11} /> Verificado</span></div>
+                <p>“{testimonial.quote}”</p>
+                <footer><strong>{testimonial.name}</strong><span>{testimonial.detail}</span></footer>
+              </article>
+            ))}
+          </div>
+          <p className="testimonials-disclaimer">Para manter a comunicação transparente, publique nomes, avaliações e imagens somente com autorização expressa dos clientes.</p>
+        </section>
       </main>
 
       {promoOpen && (
