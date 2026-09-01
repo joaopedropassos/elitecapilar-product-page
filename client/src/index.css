@@ -279,6 +279,11 @@ a { color: inherit; text-decoration: none; }
 .cta-button:hover { background: #4c493f; box-shadow: 0 15px 25px -15px rgba(24,22,18,.85); transform: translateY(-1px); }
 .cta-button:active { transform: scale(.975); }
 .cta-caption { margin: 10px 0 0; text-align: center; color: #a39a8e; font-size: 10px; letter-spacing: .04em; }
+.payment-methods { display: flex; align-items: center; justify-content: center; gap: 7px; margin-top: 14px; color: #978f84; font-size: 10px; }
+.payment-methods-label { margin-right: 2px; }
+.payment-chip { display: inline-flex; align-items: center; gap: 5px; padding: 5px 8px; border: 1px solid #e5dfd5; border-radius: 5px; background: #fff; color: #60594e; font-size: 10px; font-weight: 700; }
+.pix-symbol { color: #3bb891; font-size: 10px; transform: rotate(45deg); }
+.card-symbol { width: 15px; height: 10px; border-radius: 2px; background: linear-gradient(180deg, #5e6a9a 0 32%, #d9e0f4 32% 48%, #5e6a9a 48%); }
 .security-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 9px; margin-top: 21px; }
 .security-tile { display: flex; align-items: center; gap: 8px; min-height: 59px; padding: 10px; border: 1px solid #eae5de; border-radius: 10px; background: #fff; color: #6f6a61; }
 .security-tile > svg { color: #67936a; }

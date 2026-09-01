@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { trpc } from "@/lib/trpc";
 import {
   ArrowRight,
   Check,
@@ -83,16 +84,21 @@ export default function Home() {
   const [wishlist, setWishlist] = useState(false);
   const [cartCount, setCartCount] = useState(0);
   const [search, setSearch] = useState("");
-  const [beforeAfter, setBeforeAfter] = useState<"before" | "after">("before");
+  const checkoutMutation = trpc.payments.createCheckout.useMutation();
 
   const activePhoto = useMemo(() => gallery[activeImage], [activeImage]);
 
-  const handleAddToCart = () => {
+  const handleAddToCart = async () => {
     setCartCount((count) => count + 1);
-    toast.success("Produto adicionado ao carrinho", {
-      description: "Seu Sistema Micro-Stubble está reservado por 15 minutos.",
-      duration: 3200,
-    });
+    try {
+      const checkout = await checkoutMutation.mutateAsync({ quantity: 1 });
+      window.location.assign(checkout.checkoutUrl);
+    } catch {
+      toast.error("Não foi possível abrir o Mercado Pago", {
+        description: "Tente novamente em alguns instantes ou fale com nosso atendimento.",
+        duration: 3600,
+      });
+    }
   };
 
   const handleRelatedSearch = (value: string) => {
@@ -332,8 +338,14 @@ export default function Home() {
 
               <div className="shipping-note"><span className="truck-icon"><Truck size={18} strokeWidth={1.7} /></span><span><strong>Frete Grátis</strong><br />para todo o Brasil</span><span className="shipping-check"><Check size={13} strokeWidth={3} /></span></div>
 
-              <button onClick={handleAddToCart} className="cta-button">Adicionar ao Carrinho <ArrowRight size={18} /></button>
+              <button onClick={handleAddToCart} disabled={checkoutMutation.isPending} className="cta-button">{checkoutMutation.isPending ? "Abrindo Mercado Pago..." : "Pagar com Mercado Pago"} <ArrowRight size={18} /></button>
               <p className="cta-caption">Pagamento protegido · envio discreto</p>
+
+              <div className="payment-methods">
+                <span className="payment-methods-label">Você pode pagar com</span>
+                <span className="payment-chip pix-chip"><span className="pix-symbol">◆</span> Pix</span>
+                <span className="payment-chip card-chip"><span className="card-symbol" /> Cartão</span>
+              </div>
 
               <div className="security-grid">
                 <div className="security-tile"><ShieldCheck size={19} /><span><strong>Compra segura</strong><small>Ambiente protegido</small></span></div>
