@@ -21,12 +21,32 @@ function mercadoPagoHeaders() {
   };
 }
 
+async function mercadoPagoFetch(input: string, init: RequestInit, maxAttempts = 3) {
+  let lastError: unknown;
+  for (let attempt = 0; attempt < maxAttempts; attempt += 1) {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 15000);
+    try {
+      const response = await fetch(input, { ...init, signal: controller.signal });
+      if (response.ok || (response.status < 500 && response.status !== 429)) return response;
+      lastError = new Error(`Mercado Pago HTTP ${response.status}`);
+    } catch (error) {
+      lastError = error;
+    } finally {
+      clearTimeout(timeout);
+    }
+    if (attempt < maxAttempts - 1) await new Promise((resolve) => setTimeout(resolve, 400 * (attempt + 1)));
+  }
+  console.error("[Mercado Pago] API connection failed after retries", lastError instanceof Error ? lastError.name : "unknown_error");
+  throw new Error("Mercado Pago temporariamente indisponível");
+}
+
 export async function createMercadoPagoPreference(quantity = 1) {
   const safeQuantity = Math.max(1, Math.min(Math.floor(quantity), 10));
   const externalReference = `elitecapilar-${Date.now()}-${crypto.randomUUID().slice(0, 8)}`;
   const siteUrl = ENV.publicSiteUrl;
 
-  const response = await fetch(`${MERCADO_PAGO_API}/checkout/preferences`, {
+  const response = await mercadoPagoFetch(`${MERCADO_PAGO_API}/checkout/preferences`, {
     method: "POST",
     headers: mercadoPagoHeaders(),
     body: JSON.stringify({
@@ -84,7 +104,7 @@ export async function createMercadoPagoPreference(quantity = 1) {
 export async function createPromotionalPixPreference(email: string) {
   const externalReference = `elitecapilar-pix-499-${Date.now()}-${crypto.randomUUID().slice(0, 8)}`;
   const siteUrl = ENV.publicSiteUrl;
-  const response = await fetch(`${MERCADO_PAGO_API}/checkout/preferences`, {
+  const response = await mercadoPagoFetch(`${MERCADO_PAGO_API}/checkout/preferences`, {
     method: "POST",
     headers: mercadoPagoHeaders(),
     body: JSON.stringify({
@@ -145,7 +165,7 @@ export function registerMercadoPagoWebhook(app: Express) {
     if (type !== "payment" || !paymentId || !ENV.mercadoPagoAccessToken) return;
 
     try {
-      const response = await fetch(`${MERCADO_PAGO_API}/v1/payments/${encodeURIComponent(String(paymentId))}`, {
+      const response = await mercadoPagoFetch(`${MERCADO_PAGO_API}/v1/payments/${encodeURIComponent(String(paymentId))}`, {
         headers: mercadoPagoHeaders(),
       });
       if (!response.ok) {
