@@ -59,7 +59,7 @@ const marketplaceProducts = [
   { title: "Prótese Capilar Fios Implantados em Nó Duplo", image: "/manus-storage/mercado-livre-no-duplo_927f073e.webp", price: "R$ 658,68", oldPrice: "R$ 998", installments: "10x R$ 65,87 sem juros", detail: "Todas as cores · nó duplo", code: "X2B1NG-A2VP", url: "https://meli.la/24VPrD7" },
   { title: "Prótese Capilar Masculina 100% Cabelo Humano", image: "/manus-storage/ml-catalog-1_c415ad3d.webp", price: "R$ 668,33", oldPrice: "R$ 899", installments: "10x R$ 66,83 sem juros", detail: "Base 20x25 cm · densidade 120–130%", code: "MLB-2221172385", url: "https://produto.mercadolivre.com.br/MLB-2221172385-protese-capilar-masculina-fios-fixados-em-no-100-humanos-_JM" },
   { title: "Prótese Capilar New Australia Híbrida", image: "/manus-storage/ml-catalog-2_beff37d1.webp", price: "R$ 767,36", oldPrice: "R$ 1.199", installments: "10x R$ 76,74 sem juros", detail: "Nó duplo · todas as cores", code: "MLB-4281886453", url: "https://produto.mercadolivre.com.br/MLB-4281886453-protese-capilar-new-australia-hibrida-no-duplo-todas-cores-_JM" },
-  { title: "Prótese Capilar Nó Duplo + Fita Gold", image: "/manus-storage/ml-catalog-3_7dc06129.webp", price: "R$ 632,04", oldPrice: "R$ 1.200", installments: "10x R$ 68,70 sem juros", detail: "Cabelo humano · base 20x25 cm", code: "MLBU3024570310", url: "https://www.mercadolivre.com.br/protese-capilar-masculina-no-duplo-cabelo-humano--fita-gold/up/MLBU3024570310" },
+  { title: "Prótese Capilar Nó Duplo + Fita Gold", image: "/manus-storage/ml-catalog-3_7dc06129.webp", price: "R$ 632,04", oldPrice: "R$ 1.200", installments: "10x R$ 68,70 sem juros", detail: "Cabelo humano · base 20x25 cm", code: "MLBU3024570310", url: "https://meli.la/2CTt8JN" },
 ];
 
 function StarRating() {
