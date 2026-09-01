@@ -325,20 +325,27 @@ a { color: inherit; text-decoration: none; }
 .promo-modal-footnote svg { color: #6b986e; }
 .cta-button:disabled, .promo-button:disabled { cursor: wait; opacity: .7; }
 .testimonials-section { margin-top: 100px; border-top: 1px solid #e8e2d9; padding-top: 38px; }
-.marketplace-product { display: grid; grid-template-columns: minmax(250px,.65fr) minmax(0,1.35fr); gap: 0; overflow: hidden; margin-top: 86px; border: 1px solid #e4ddd3; border-radius: 18px; background: #fffdfa; box-shadow: 0 20px 55px -42px rgba(47,39,27,.55); }
-.marketplace-visual { position: relative; min-height: 330px; overflow: hidden; background: #f1eee8; }
+.marketplace-catalog { margin-top: 86px; border-top: 1px solid #e8e2d9; padding-top: 38px; }
+.catalog-heading { display: flex; align-items: end; justify-content: space-between; gap: 28px; margin-bottom: 24px; }
+.catalog-heading > p { max-width: 390px; margin: 0; color: #8b8378; font-size: 11px; line-height: 1.55; text-align: right; }
+.marketplace-grid { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 14px; }
+.marketplace-card { overflow: hidden; border: 1px solid #e4ddd3; border-radius: 15px; background: #fffdfa; box-shadow: 0 20px 55px -46px rgba(47,39,27,.6); transition: transform .25s ease, box-shadow .25s ease; }
+.marketplace-card:hover { transform: translateY(-3px); box-shadow: 0 24px 55px -38px rgba(47,39,27,.55); }
+.marketplace-visual { position: relative; aspect-ratio: 1.08; overflow: hidden; background: #f1eee8; }
 .marketplace-visual img { width: 100%; height: 100%; object-fit: cover; transition: transform .55s ease; }
-.marketplace-product:hover .marketplace-visual img { transform: scale(1.035); }
+.marketplace-card:hover .marketplace-visual img { transform: scale(1.04); }
 .marketplace-badge { position: absolute; left: 15px; top: 15px; padding: 7px 10px; border-radius: 6px; background: #ffe600; color: #29291f; font-size: 9px; font-weight: 900; letter-spacing: .1em; text-transform: uppercase; box-shadow: 0 8px 20px -10px rgba(0,0,0,.45); }
-.marketplace-copy { display: flex; flex-direction: column; justify-content: center; padding: 38px 42px; }
-.marketplace-description { max-width: 640px; margin: 14px 0 22px; color: #746d63; font-size: 13px; line-height: 1.7; }
-.marketplace-meta { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 12px; margin-bottom: 23px; }
-.marketplace-meta span { display: grid; gap: 5px; padding: 12px; border: 1px solid #ebe5dc; border-radius: 9px; background: #faf7f2; }
-.marketplace-meta small { color: #9a9184; font-size: 9px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
-.marketplace-meta strong { color: #36322c; font-size: 12px; }
-.marketplace-button { display: inline-flex; align-items: center; justify-content: center; gap: 8px; width: fit-content; padding: 13px 17px; border-radius: 8px; background: #2d3277; color: #fff; font-size: 11px; font-weight: 800; transition: transform .2s ease, background .2s ease; }
+.marketplace-card-body { display: flex; flex-direction: column; min-height: 260px; padding: 18px; }
+.marketplace-code { margin: 0 0 8px; color: #a09382; font-size: 8px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; }
+.marketplace-card h3 { margin: 0; color: #34312b; font-family: "DM Serif Display", Georgia, serif; font-size: 18px; font-weight: 400; line-height: 1.15; }
+.marketplace-detail { margin: 10px 0 16px; color: #898076; font-size: 10px; line-height: 1.5; }
+.marketplace-price { display: flex; align-items: baseline; gap: 8px; margin-top: auto; }
+.marketplace-price span { color: #a1988d; font-size: 10px; text-decoration: line-through; }
+.marketplace-price strong { color: #2f2c27; font-family: "DM Serif Display", Georgia, serif; font-size: 23px; font-weight: 400; }
+.marketplace-installments { margin: 3px 0 14px; color: #71695f; font-size: 9px; }
+.marketplace-button { display: inline-flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 11px 13px; border-radius: 7px; background: #2d3277; color: #fff; font-size: 10px; font-weight: 800; transition: transform .2s ease, background .2s ease; }
 .marketplace-button:hover { background: #40479b; transform: translateY(-1px); }
-.marketplace-note { margin: 10px 0 0; color: #9b9389; font-size: 9px; line-height: 1.5; }
+.marketplace-note { margin: 12px 0 0; color: #9b9389; font-size: 9px; line-height: 1.5; }
 .testimonials-heading { display: flex; align-items: end; justify-content: space-between; gap: 20px; margin-bottom: 24px; }
 .testimonials-rating { display: flex; align-items: center; gap: 12px; color: #8a8175; font-size: 11px; }
 .testimonial-feature { display: grid; grid-template-columns: minmax(0, 1.08fr) minmax(300px, .92fr); overflow: hidden; border: 1px solid #e2dbd0; border-radius: 18px; background: #f3eee6; }
@@ -378,7 +385,7 @@ a { color: inherit; text-decoration: none; }
 
 @media (min-width: 640px) { .container { padding-left: 1.5rem; padding-right: 1.5rem; } }
 @media (min-width: 1024px) { .container { max-width: 1280px; padding-left: 2rem; padding-right: 2rem; } }
-@media (max-width: 1023px) { .main-stage { min-height: min(610px, 82vw); } .purchase-card { padding-top: 15px; } }
+@media (max-width: 1023px) { .main-stage { min-height: min(610px, 82vw); } .purchase-card { padding-top: 15px; } .marketplace-grid { grid-template-columns: repeat(2,minmax(0,1fr)); } }
 @media (max-width: 639px) {
   .top-strip { font-size: 9px; letter-spacing: .16em; }
   .brand { font-size: 20px; gap: 7px; }
@@ -396,11 +403,10 @@ a { color: inherit; text-decoration: none; }
   .promo-button { width: 100%; justify-content: center; }
   .promo-modal { padding: 27px 21px 22px; }
   .testimonials-section { margin-top: 70px; }
-  .marketplace-product { grid-template-columns: 1fr; margin-top: 66px; }
-  .marketplace-visual { min-height: 280px; }
-  .marketplace-copy { padding: 25px 20px; }
-  .marketplace-meta { grid-template-columns: 1fr; }
-  .marketplace-button { width: 100%; }
+  .marketplace-catalog { margin-top: 66px; }
+  .catalog-heading { align-items: flex-start; flex-direction: column; }
+  .catalog-heading > p { text-align: left; }
+  .marketplace-grid { grid-template-columns: 1fr; }
   .testimonials-heading { align-items: flex-start; flex-direction: column; }
   .testimonial-feature { grid-template-columns: 1fr; }
   .testimonial-proof { padding: 16px; }

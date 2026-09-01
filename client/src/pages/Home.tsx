@@ -55,6 +55,13 @@ const testimonials = [
   { quote: "O atendimento explicou cada etapa e o resultado ficou mais sutil do que eu imaginava.", name: "Depoimento 03", detail: "Texto demonstrativo · substituir por relato autorizado" },
 ];
 
+const marketplaceProducts = [
+  { title: "Prótese Capilar Fios Implantados em Nó Duplo", image: "/manus-storage/mercado-livre-no-duplo_927f073e.webp", price: "R$ 658,68", oldPrice: "R$ 998", installments: "10x R$ 65,87 sem juros", detail: "Todas as cores · nó duplo", code: "X2B1NG-A2VP", url: "https://meli.la/24VPrD7" },
+  { title: "Prótese Capilar Masculina 100% Cabelo Humano", image: "/manus-storage/ml-catalog-1_c415ad3d.webp", price: "R$ 668,33", oldPrice: "R$ 899", installments: "10x R$ 66,83 sem juros", detail: "Base 20x25 cm · densidade 120–130%", code: "MLB-2221172385", url: "https://produto.mercadolivre.com.br/MLB-2221172385-protese-capilar-masculina-fios-fixados-em-no-100-humanos-_JM" },
+  { title: "Prótese Capilar New Australia Híbrida", image: "/manus-storage/ml-catalog-2_beff37d1.webp", price: "R$ 767,36", oldPrice: "R$ 1.199", installments: "10x R$ 76,74 sem juros", detail: "Nó duplo · todas as cores", code: "MLB-4281886453", url: "https://produto.mercadolivre.com.br/MLB-4281886453-protese-capilar-new-australia-hibrida-no-duplo-todas-cores-_JM" },
+  { title: "Prótese Capilar Nó Duplo + Fita Gold", image: "/manus-storage/ml-catalog-3_7dc06129.webp", price: "R$ 632,04", oldPrice: "R$ 1.200", installments: "10x R$ 68,70 sem juros", detail: "Cabelo humano · base 20x25 cm", code: "MLBU3024570310", url: "https://www.mercadolivre.com.br/protese-capilar-masculina-no-duplo-cabelo-humano--fita-gold/up/MLBU3024570310" },
+];
+
 function StarRating() {
   return (
     <div className="flex items-center gap-1" aria-label="Avaliação de 4.5 de 5">
@@ -416,23 +423,30 @@ export default function Home() {
           </aside>
         </div>
 
-        <section className="marketplace-product" aria-labelledby="mercado-livre-title">
-          <div className="marketplace-visual">
-            <img src="/manus-storage/mercado-livre-no-duplo_927f073e.webp" alt="Prótese capilar com fios implantados em nó duplo, disponível no Mercado Livre" />
-            <span className="marketplace-badge">Mercado Livre</span>
+        <section className="marketplace-catalog" aria-labelledby="mercado-livre-title">
+          <div className="catalog-heading">
+            <div><p className="eyebrow mb-2">Catálogo no Mercado Livre</p><h2 id="mercado-livre-title" className="section-title">Mais opções para o seu estilo</h2></div>
+            <p>Compra, entrega e condições processadas diretamente pelo Mercado Livre.</p>
           </div>
-          <div className="marketplace-copy">
-            <p className="eyebrow mb-2">Outra opção de compra</p>
-            <h2 id="mercado-livre-title" className="section-title">Prótese Capilar Fios Implantados em Nó Duplo</h2>
-            <p className="marketplace-description">Modelo com opções de cores e fios implantados em nó duplo. Compra, entrega e condições processadas diretamente pelo Mercado Livre.</p>
-            <div className="marketplace-meta">
-              <span><small>Código para busca</small><strong>X2B1NG-A2VP</strong></span>
-              <span><small>Preço consultado</small><strong>R$ 658,68</strong></span>
-              <span><small>Parcelamento exibido</small><strong>10x R$ 65,87</strong></span>
-            </div>
-            <a href="https://meli.la/24VPrD7" target="_blank" rel="noopener noreferrer" className="marketplace-button">Ver produto no Mercado Livre <ExternalLink size={15} /></a>
-            <p className="marketplace-note">Preço, estoque, frete e condições podem mudar no anúncio do Mercado Livre.</p>
+          <div className="marketplace-grid">
+            {marketplaceProducts.map((product) => (
+              <article className="marketplace-card" key={product.code}>
+                <div className="marketplace-visual">
+                  <img src={product.image} alt={product.title} />
+                  <span className="marketplace-badge">Mercado Livre</span>
+                </div>
+                <div className="marketplace-card-body">
+                  <p className="marketplace-code">{product.code}</p>
+                  <h3>{product.title}</h3>
+                  <p className="marketplace-detail">{product.detail}</p>
+                  <div className="marketplace-price"><span>{product.oldPrice}</span><strong>{product.price}</strong></div>
+                  <p className="marketplace-installments">{product.installments}</p>
+                  <a href={product.url} target="_blank" rel="noopener noreferrer" className="marketplace-button">Ver no Mercado Livre <ExternalLink size={14} /></a>
+                </div>
+              </article>
+            ))}
           </div>
+          <p className="marketplace-note">Preços, estoque, frete e condições foram consultados no Mercado Livre e podem mudar no anúncio.</p>
         </section>
 
         <section className="testimonials-section" aria-labelledby="depoimentos-title">
