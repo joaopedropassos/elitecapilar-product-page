@@ -7,6 +7,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Copy,
+  ExternalLink,
   Heart,
   Menu,
   Search,
@@ -414,6 +415,25 @@ export default function Home() {
             </div>
           </aside>
         </div>
+
+        <section className="marketplace-product" aria-labelledby="mercado-livre-title">
+          <div className="marketplace-visual">
+            <img src="/manus-storage/mercado-livre-no-duplo_927f073e.webp" alt="Prótese capilar com fios implantados em nó duplo, disponível no Mercado Livre" />
+            <span className="marketplace-badge">Mercado Livre</span>
+          </div>
+          <div className="marketplace-copy">
+            <p className="eyebrow mb-2">Outra opção de compra</p>
+            <h2 id="mercado-livre-title" className="section-title">Prótese Capilar Fios Implantados em Nó Duplo</h2>
+            <p className="marketplace-description">Modelo com opções de cores e fios implantados em nó duplo. Compra, entrega e condições processadas diretamente pelo Mercado Livre.</p>
+            <div className="marketplace-meta">
+              <span><small>Código para busca</small><strong>X2B1NG-A2VP</strong></span>
+              <span><small>Preço consultado</small><strong>R$ 658,68</strong></span>
+              <span><small>Parcelamento exibido</small><strong>10x R$ 65,87</strong></span>
+            </div>
+            <a href="https://meli.la/24VPrD7" target="_blank" rel="noopener noreferrer" className="marketplace-button">Ver produto no Mercado Livre <ExternalLink size={15} /></a>
+            <p className="marketplace-note">Preço, estoque, frete e condições podem mudar no anúncio do Mercado Livre.</p>
+          </div>
+        </section>
 
         <section className="testimonials-section" aria-labelledby="depoimentos-title">
           <div className="testimonials-heading">
