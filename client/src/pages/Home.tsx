@@ -224,6 +224,10 @@ export default function Home() {
                 <ChevronDown size={13} className="transition group-hover:translate-y-0.5" />
               </a>
             ))}
+            <a href="/beleza-mais-vendidos.html" className="nav-link group text-[#087a5b]">
+              Top 100 Beleza
+              <ExternalLink size={13} className="transition group-hover:translate-x-0.5" />
+            </a>
           </div>
         </nav>
 
@@ -237,6 +241,10 @@ export default function Home() {
                   <ArrowRight size={16} className="text-[#a09484]" />
                 </a>
               ))}
+              <a href="/beleza-mais-vendidos.html" onClick={() => setMenuOpen(false)} className="flex items-center justify-between border-b border-[#f1eee9] py-3.5 text-[15px] font-medium text-[#087a5b]">
+                <span><span className="mr-3 text-xs text-[#b6a68f]">05</span>Top 100 Beleza</span>
+                <ExternalLink size={16} />
+              </a>
             </div>
           </div>
         )}
