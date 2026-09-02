@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { trpc } from "@/lib/trpc";
 import {
   ArrowRight,
@@ -20,49 +20,10 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 
-const gallery = [
-  {
-    label: "Frontal",
-    src: "/manus-storage/product-main-v2_4dea0895.jpg",
-    position: "center center",
-  },
-  {
-    label: "Perfil",
-    src: "/manus-storage/product-detail-v2_5db35ab0.jpg",
-    position: "center center",
-  },
-  {
-    label: "Textura",
-    src: "/manus-storage/product-main-v2_4dea0895.jpg",
-    position: "center 30%",
-  },
-  {
-    label: "Acabamento",
-    src: "/manus-storage/product-detail-v2_5db35ab0.jpg",
-    position: "center 65%",
-  },
-];
-
 const relatedSearches = [
   "prótese capilar curta",
   "sistema careca por fazer",
   "densidade baixa prótese",
-];
-
-const testimonials = [
-  { quote: "O acabamento ficou muito natural e a densidade baixa deixou exatamente o efeito raspado que eu procurava.", name: "Depoimento 01", detail: "Texto demonstrativo · substituir por relato autorizado" },
-  { quote: "A aplicação é discreta, confortável e mudou minha segurança para sair sem boné.", name: "Depoimento 02", detail: "Texto demonstrativo · substituir por relato autorizado" },
-  { quote: "O atendimento explicou cada etapa e o resultado ficou mais sutil do que eu imaginava.", name: "Depoimento 03", detail: "Texto demonstrativo · substituir por relato autorizado" },
-];
-
-const marketplaceProducts = [
-  { title: "Prótese Capilar Fios Implantados em Nó Duplo", image: "/manus-storage/mercado-livre-no-duplo_927f073e.webp", price: "R$ 658,68", oldPrice: "R$ 998", installments: "10x R$ 65,87 sem juros", detail: "Todas as cores · nó duplo", code: "X2B1NG-A2VP", url: "https://meli.la/24VPrD7" },
-  { title: "Prótese Capilar New Australia Híbrida", image: "/manus-storage/ml-catalog-2_beff37d1.webp", price: "R$ 767,36", oldPrice: "R$ 1.199", installments: "10x R$ 76,74 sem juros", detail: "Nó duplo · todas as cores", code: "X2B1NG-JQYY", url: "https://meli.la/1gDTTRF" },
-  { title: "Prótese Capilar Nó Duplo + Fita Gold", image: "/manus-storage/ml-catalog-3_7dc06129.webp", price: "R$ 632,04", oldPrice: "R$ 1.200", installments: "10x R$ 68,70 sem juros", detail: "Cabelo humano · base 20x25 cm", code: "MLBU3024570310", url: "https://meli.la/2CTt8JN" },
-  { title: "Prótese Capilar Castanho Escuro 20% Grisalho", image: "/manus-storage/affiliate-grisalho_61ab78b0.webp", price: "R$ 1.102,00", oldPrice: "R$ 1.185", installments: "10x R$ 118,59 sem juros", detail: "Fios injetados · base 20x25 cm", code: "X2B1NG-L47U", url: "https://meli.la/1huAFeJ" },
-  { title: "Prótese Capilar Micropele 10% Grisalho", image: "/manus-storage/affiliate-micropele-10_27f58e91.webp", price: "R$ 412,00", oldPrice: "", installments: "12x R$ 39,84", detail: "Fio injetado · castanho escuro", code: "X2B1NG-P1N0", url: "https://meli.la/2syutfi" },
-  { title: "Prótese Capilar Híbrida Respirável", image: "/manus-storage/affiliate-hibrida_10b6d528.webp", price: "R$ 284,90", oldPrice: "R$ 299,90", installments: "6x R$ 49,98 sem juros", detail: "Cabelo humano · tamanho 17x22", code: "X2B1NG-CTNB", url: "https://meli.la/1F8ieh5" },
-  { title: "Kit 2 Próteses Capilares Orgânicas", image: "/manus-storage/affiliate-kit2_15041905.webp", price: "R$ 29,68", oldPrice: "", installments: "Consulte condições no anúncio", detail: "Kit com 2 unidades · cabelo liso", code: "X2B1NG-S8F4", url: "https://meli.la/126mQdE" },
 ];
 
 function StarRating() {
@@ -79,25 +40,7 @@ function StarRating() {
   );
 }
 
-function MiniPortrait({ src, label, position }: { src: string; label: string; position: string }) {
-  return (
-    <div className="group relative min-h-[128px] overflow-hidden rounded-[14px] bg-[#d6d0c8]">
-      <img
-        src={src}
-        alt={label}
-        className="h-full min-h-[128px] w-full object-cover grayscale-[18%] transition duration-500 group-hover:scale-105"
-        style={{ objectPosition: position }}
-      />
-      <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
-      <span className="absolute bottom-3 left-3 rounded-full bg-[#f6f0e7]/90 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.16em] text-[#25231f]">
-        {label}
-      </span>
-    </div>
-  );
-}
-
 export default function Home() {
-  const [activeImage, setActiveImage] = useState(0);
   const [menuOpen, setMenuOpen] = useState(false);
   const [wishlist, setWishlist] = useState(false);
   const [cartCount, setCartCount] = useState(0);
@@ -107,8 +50,6 @@ export default function Home() {
   const [pixPayment, setPixPayment] = useState<{ paymentId: string; status: string; qrCodeBase64: string; qrCode: string; ticketUrl: string | null; expiresAt: string | null; orderNumber: string; totalCents: number } | null>(null);
   const { data: directSalesStatus } = trpc.payments.directSalesStatus.useQuery();
   const pixPaymentMutation = trpc.payments.createDirectOrderPix.useMutation();
-
-  const activePhoto = useMemo(() => gallery[activeImage], [activeImage]);
 
   const handleAddToCart = () => {
     if (!directSalesStatus?.enabled) {
@@ -158,7 +99,7 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-[#fbfaf8] text-[#24231f]">
       <div className="top-strip px-4 py-2.5 text-center text-[10px] font-semibold uppercase tracking-[0.26em] text-white sm:text-[11px]">
-        TOCA DO MACHO · 10% DE DESCONTO NO PIX
+        TOCA DO MACHO · TUDO PARA O HOMEM · 10% DE DESCONTO NO PIX
       </div>
 
       <header className="border-b border-[#ece8e1] bg-[#fbfaf8]/95 backdrop-blur-xl">
@@ -223,7 +164,7 @@ export default function Home() {
 
         <nav className="hidden border-t border-[#efede9] lg:block" aria-label="Categorias principais">
           <div className="mx-auto flex max-w-[1440px] items-center justify-center gap-10 px-10 py-3.5">
-            {["Barba & Cabelo", "Perfumes Masculinos", "Cuidados de Pele", "Óleos Capilares"].map((item) => (
+            {["Games", "Roupas Masculinas", "Barba & Cabelo", "Perfumes Masculinos", "Cuidados de Pele", "Óleos Capilares"].map((item) => (
               <a key={item} href="#produto" className="nav-link group">
                 {item}
                 <ChevronDown size={13} className="transition group-hover:translate-y-0.5" />
@@ -240,7 +181,7 @@ export default function Home() {
           <div className="mobile-menu border-t border-[#ece8e1] bg-white px-5 py-5 lg:hidden">
             <p className="mb-4 text-[10px] font-bold uppercase tracking-[0.2em] text-[#a09484]">Explorar coleção</p>
             <div className="grid gap-1">
-              {["Barba & Cabelo", "Perfumes Masculinos", "Cuidados de Pele", "Óleos Capilares"].map((item, index) => (
+              {["Games", "Roupas Masculinas", "Barba & Cabelo", "Perfumes Masculinos", "Cuidados de Pele", "Óleos Capilares"].map((item, index) => (
                 <a key={item} href="#produto" onClick={() => setMenuOpen(false)} className="flex items-center justify-between border-b border-[#f1eee9] py-3.5 text-[15px] font-medium">
                   <span><span className="mr-3 text-xs text-[#b6a68f]">0{index + 1}</span>{item}</span>
                   <ArrowRight size={16} className="text-[#a09484]" />
@@ -285,7 +226,7 @@ export default function Home() {
 
             <div className="relative">
               <div className="group relative overflow-hidden rounded-[22px] border border-[#e7e1d9] bg-[#ddd8d0] shadow-[0_22px_55px_-30px_rgba(35,31,23,.4)]">
-                <div className="main-stage" style={{ backgroundImage: `linear-gradient(180deg, rgba(248,245,240,.06), rgba(22,20,17,.18)), url(${activePhoto.src})`, backgroundPosition: activePhoto.position }}>
+                <div className="main-stage toca-hero-visual">
                   <div className="stage-grain" />
                   <div className="stage-badge"><Sparkles size={13} /> Resultado natural</div>
                   <div className="stage-caption">
@@ -306,41 +247,6 @@ export default function Home() {
                 </div>
               </div>
 
-              <div className="simulation-card">
-                <div className="mb-4 flex items-end justify-between gap-4">
-                  <div>
-                    <p className="eyebrow mb-1.5 text-[#9b805a]">Prova social</p>
-                    <h2 className="font-serif text-[21px] font-semibold tracking-[-.02em] text-[#2f2a23]">Simulação de Cliente</h2>
-                  </div>
-                  <span className="mb-1 text-[12px] font-medium text-[#786c5c]">Sua aparência</span>
-                </div>
-                <div className="grid grid-cols-2 gap-2.5">
-                  <MiniPortrait src="/manus-storage/customer-before-v2_ab22520f.jpg" label="Antes" position="center center" />
-                  <MiniPortrait src="/manus-storage/customer-after-v2_b607e824.jpg" label="Depois" position="center center" />
-                </div>
-                <div className="mt-3 flex items-center justify-between text-[10px] text-[#7f7466]">
-                  <span>Cliente real · resultado individual</span>
-                  <span className="font-bold uppercase tracking-[.15em]">01 / 02</span>
-                </div>
-              </div>
-            </div>
-
-            <div className="mt-5 flex items-center gap-3">
-              <button className="thumb-arrow" onClick={() => setActiveImage((activeImage - 1 + gallery.length) % gallery.length)} aria-label="Imagem anterior"><ChevronLeft size={18} /></button>
-              <div className="grid flex-1 grid-cols-4 gap-2.5 sm:gap-3">
-                {gallery.map((image, index) => (
-                  <button
-                    key={image.label}
-                    onClick={() => setActiveImage(index)}
-                    className={`thumb group relative overflow-hidden rounded-[13px] border-2 bg-[#ded9d1] transition ${activeImage === index ? "border-[#2d2b27]" : "border-transparent opacity-65 hover:opacity-100"}`}
-                    aria-label={`Ver imagem ${image.label}`}
-                  >
-                    <img src={image.src} alt={image.label} className="aspect-[1.15] w-full object-cover grayscale-[15%] transition duration-500 group-hover:scale-105" style={{ objectPosition: image.position }} />
-                    {activeImage === index && <span className="absolute inset-x-0 bottom-0 h-1 bg-[#2d2b27]" />}
-                  </button>
-                ))}
-              </div>
-              <button className="thumb-arrow" onClick={() => setActiveImage((activeImage + 1) % gallery.length)} aria-label="Próxima imagem"><ChevronRight size={18} /></button>
             </div>
 
             <article className="description-block mt-14 border-t border-[#e9e4dc] pt-9 lg:mt-16">
@@ -438,67 +344,6 @@ export default function Home() {
           </aside>
         </div>
 
-        <section className="marketplace-catalog" aria-labelledby="mercado-livre-title">
-          <div className="catalog-heading">
-            <div><p className="eyebrow mb-2">Catálogo no Mercado Livre</p><h2 id="mercado-livre-title" className="section-title">Mais opções para o seu estilo</h2></div>
-            <p>Links comissionados: podemos receber comissão, sem custo adicional para você. Compra e entrega são processadas pelo Mercado Livre.</p>
-          </div>
-          <div className="marketplace-grid">
-            {marketplaceProducts.map((product) => (
-              <article className="marketplace-card" key={product.code}>
-                <div className="marketplace-visual">
-                  <img src={product.image} alt={product.title} />
-                  <span className="marketplace-badge">Mercado Livre</span>
-                </div>
-                <div className="marketplace-card-body">
-                  <p className="marketplace-code">{product.code}</p>
-                  <h3>{product.title}</h3>
-                  <p className="marketplace-detail">{product.detail}</p>
-                  <div className="marketplace-price"><span>{product.oldPrice}</span><strong>{product.price}</strong></div>
-                  <p className="marketplace-installments">{product.installments}</p>
-                  <a href={product.url} target="_blank" rel="noopener noreferrer" className="marketplace-button">Ver no Mercado Livre <ExternalLink size={14} /></a>
-                </div>
-              </article>
-            ))}
-          </div>
-          <p className="marketplace-note">Todos os botões usam os links comissionados fornecidos. Preços, estoque, frete e condições podem mudar no anúncio.</p>
-        </section>
-
-        <section className="testimonials-section" aria-labelledby="depoimentos-title">
-          <div className="testimonials-heading">
-            <div>
-              <p className="eyebrow mb-2">Experiências reais</p>
-              <h2 id="depoimentos-title" className="section-title">Quem usa, recomenda</h2>
-            </div>
-            <div className="testimonials-rating"><StarRating /><span>4.5 / 5 · 40 avaliações</span></div>
-          </div>
-
-          <div className="testimonial-feature">
-            <div className="testimonial-proof">
-              <div className="testimonial-proof-head"><span>Antes e depois</span><span className="proof-check"><Check size={12} strokeWidth={3} /> Caso autorizado</span></div>
-              <div className="testimonial-before-after">
-                <div><img src="/manus-storage/customer-before-v2_ab22520f.jpg" alt="Cliente antes da aplicação do sistema capilar" /><span>Antes</span></div>
-                <div><img src="/manus-storage/customer-after-v2_b607e824.jpg" alt="Cliente depois da aplicação do sistema capilar" /><span>Depois</span></div>
-              </div>
-            </div>
-            <div className="testimonial-feature-copy">
-              <div className="quote-mark">“</div>
-              <blockquote>“O efeito ficou discreto, como se eu tivesse acabado de raspar o cabelo. A diferença está nos detalhes.”</blockquote>
-              <div className="testimonial-author"><span className="author-avatar">01</span><span><strong>Cliente do estudo de caso</strong><small>Nome e relato a confirmar antes da publicação</small></span><StarRating /></div>
-            </div>
-          </div>
-
-          <div className="testimonial-quotes">
-            {testimonials.slice(1).map((testimonial) => (
-              <article className="quote-card" key={testimonial.name}>
-                <div className="quote-card-top"><StarRating /><span className="quote-verified"><Check size={11} /> Verificado</span></div>
-                <p>“{testimonial.quote}”</p>
-                <footer><strong>{testimonial.name}</strong><span>{testimonial.detail}</span></footer>
-              </article>
-            ))}
-          </div>
-          <p className="testimonials-disclaimer">Para manter a comunicação transparente, publique nomes, avaliações e imagens somente com autorização expressa dos clientes.</p>
-        </section>
       </main>
 
       {promoOpen && (
