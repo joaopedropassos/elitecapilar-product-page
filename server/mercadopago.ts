@@ -257,9 +257,9 @@ export async function createDirectSalePixPayment(input: { email: string; externa
   };
 }
 
-export async function createCatalogDirectPixPayment(input: { email: string; externalReference: string; orderNumber: string; productId: CatalogProductId }) {
+export async function createCatalogDirectPixPayment(input: { email: string; externalReference: string; orderNumber: string; productId: CatalogProductId; shippingCents?: number }) {
   const product = CATALOG_PRODUCTS[input.productId];
-  const totalCents = Math.floor(product.fullPriceCents * 0.9);
+  const totalCents = Math.floor(product.fullPriceCents * 0.9) + (input.shippingCents ?? 0);
   const response = await mercadoPagoFetch(`${MERCADO_PAGO_API}/v1/payments`, {
     method: "POST",
     headers: {

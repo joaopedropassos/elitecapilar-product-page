@@ -25,3 +25,7 @@ A cobertura automatizada inclui a criação do pagamento Pix por produto, QR Cod
 A configuração comercial foi ativada e validada pelo endpoint público de status. Um smoke test real, sem pagamento efetuado, criou um Pix pendente para o produto `perfume-01`: preço cheio de R$ 89,90 e total de R$ 80,91, exatamente 10% de desconto. A resposta incluiu identificador de pagamento, número de pedido, QR Code e código Pix copia e cola. O formulário obrigatório persiste nome, e-mail confirmado, WhatsApp, CEP e endereço completo antes da geração do Pix.
 
 O mascote foi inserido no topo da página inicial com movimento vertical discreto e desativação automática da animação para pessoas que preferem movimento reduzido.
+
+## Frete por CEP antes do Pix
+
+Foi adicionada uma cotação regional por CEP antes da cobrança. O checkout consulta o frete, mostra valor, região e prazo no modal e só permite gerar o Pix quando a cotação estiver disponível. O backend recalcula o frete a partir do CEP recebido, sem confiar no valor enviado pelo navegador; o total é o preço cheio com 10% de desconto mais o frete. Para o CEP 01001-000, o smoke test confirmou preço Pix de R$ 80,91, frete de R$ 19,90 e total de R$ 100,81, com QR Code e código copia e cola.

@@ -78,7 +78,7 @@ beforeEach(() => {
   ENV.directSalesShippingEstimate = "5 a 10 dias úteis";
   mocks.createOrder.mockResolvedValue({ id: 1 });
   mocks.createDirectSalePixPayment.mockResolvedValue({ paymentId: "123", status: "pending", qrCodeBase64: "cXI=", qrCode: "000201", ticketUrl: null, expiresAt: null });
-  mocks.createCatalogDirectPixPayment.mockResolvedValue({ paymentId: "456", status: "pending", qrCodeBase64: "cXI=", qrCode: "000201", ticketUrl: null, expiresAt: null, totalCents: 8091 });
+  mocks.createCatalogDirectPixPayment.mockResolvedValue({ paymentId: "456", status: "pending", qrCodeBase64: "cXI=", qrCode: "000201", ticketUrl: null, expiresAt: null, totalCents: 10081 });
   mocks.attachPaymentToOrder.mockResolvedValue(undefined);
   mocks.updateOrderPaymentStatus.mockResolvedValue(undefined);
   mocks.listOrders.mockResolvedValue([]);
@@ -123,13 +123,13 @@ describe("payments.createDirectOrderPix", () => {
       productTitle: "Perfume de Feromônios Dominus Men 50 ml",
       originalPriceCents: 8990,
       discountPercent: 10,
-      totalCents: 8091,
+      totalCents: 10081,
       postalCode: "01001-000",
       street: "Praça da Sé",
       addressNumber: "100",
     }));
-    expect(mocks.createCatalogDirectPixPayment).toHaveBeenCalledWith(expect.objectContaining({ productId: "perfume-01", email: "cliente@example.com" }));
-    expect(result).toMatchObject({ paymentId: "456", totalCents: 8091, fullPriceCents: 8990 });
+    expect(mocks.createCatalogDirectPixPayment).toHaveBeenCalledWith(expect.objectContaining({ productId: "perfume-01", email: "cliente@example.com", shippingCents: 1990 }));
+    expect(result).toMatchObject({ paymentId: "456", totalCents: 10081, fullPriceCents: 8990, shipping: expect.objectContaining({ priceCents: 1990 }) });
   });
 });
 

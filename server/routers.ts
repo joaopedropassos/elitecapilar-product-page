@@ -5,6 +5,7 @@ import { systemRouter } from "./_core/systemRouter";
 import { adminProcedure, publicProcedure, router } from "./_core/trpc";
 import { attachPaymentToOrder, createOrder, getOrderStatus, listOrders, updateOrderFulfillment, updateOrderPaymentStatus } from "./db";
 import { CATALOG_PRODUCTS, createCatalogDirectPixPayment, createDirectSalePixPayment, createMercadoPagoPreference, createPromotionalPixPayment, createPromotionalPixPreference, DIRECT_PIX_PRICE, PRODUCT } from "./mercadopago";
+import { calculateShippingQuote } from "./shipping";
 import { z } from "zod";
 
 const directOrderInput = z.object({
@@ -113,7 +114,8 @@ export const appRouter = router({
         const product = CATALOG_PRODUCTS[input.productId];
         const orderNumber = `TC${Date.now().toString(36).toUpperCase()}${crypto.randomUUID().slice(0, 4).toUpperCase()}`;
         const externalReference = `TC-${orderNumber}-${crypto.randomUUID().slice(0, 8)}`;
-        const totalCents = Math.floor(product.fullPriceCents * 0.9);
+        const shipping = calculateShippingQuote(input.postalCode);
+        const totalCents = Math.floor(product.fullPriceCents * 0.9) + shipping.priceCents;
         await createOrder({
           orderNumber,
           externalReference,
@@ -138,9 +140,9 @@ export const appRouter = router({
           consentPrivacy: input.consentPrivacy,
         });
         try {
-          const payment = await createCatalogDirectPixPayment({ productId: input.productId, email: input.email, externalReference, orderNumber });
+          const payment = await createCatalogDirectPixPayment({ productId: input.productId, email: input.email, externalReference, orderNumber, shippingCents: shipping.priceCents });
           await attachPaymentToOrder(orderNumber, payment.paymentId);
-          return { ...payment, orderNumber, productTitle: product.title, fullPriceCents: product.fullPriceCents };
+          return { ...payment, orderNumber, productTitle: product.title, fullPriceCents: product.fullPriceCents, shipping };
         } catch (error) {
           await updateOrderPaymentStatus(externalReference, "payment_failed");
           throw error;
@@ -149,6 +151,12 @@ export const appRouter = router({
     getOrderStatus: publicProcedure
       .input(z.object({ orderNumber: z.string().trim().min(6).max(40), email: z.string().trim().toLowerCase().email() }))
       .query(({ input }) => getOrderStatus(input.orderNumber, input.email)),
+  }),
+
+  shipping: router({
+    quote: publicProcedure
+      .input(z.object({ postalCode: z.string().trim() }))
+      .query(({ input }) => calculateShippingQuote(input.postalCode)),
   }),
 
   orders: router({

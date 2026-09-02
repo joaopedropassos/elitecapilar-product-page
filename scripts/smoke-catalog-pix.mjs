@@ -28,7 +28,7 @@ const result = parsed?.[0]?.result?.data?.json ?? parsed?.[0]?.result?.data;
 if (!result?.paymentId || !result?.qrCode || !result?.qrCodeBase64) {
   throw new Error("Catalog Pix did not return payment, QR Code, and copia e cola data");
 }
-if (result.totalCents !== 8091 || result.fullPriceCents !== 8990) {
-  throw new Error(`Unexpected catalog Pix amounts: ${JSON.stringify({ totalCents: result.totalCents, fullPriceCents: result.fullPriceCents })}`);
+if (result.totalCents !== 10081 || result.fullPriceCents !== 8990 || result.shipping?.priceCents !== 1990) {
+  throw new Error(`Unexpected catalog Pix amounts: ${JSON.stringify({ totalCents: result.totalCents, fullPriceCents: result.fullPriceCents, shippingCents: result.shipping?.priceCents })}`);
 }
-console.log(JSON.stringify({ ok: true, productId: input.productId, totalCents: result.totalCents, hasQrCode: true, orderNumber: result.orderNumber }));
+console.log(JSON.stringify({ ok: true, productId: input.productId, totalCents: result.totalCents, shippingCents: result.shipping.priceCents, hasQrCode: true, orderNumber: result.orderNumber }));
