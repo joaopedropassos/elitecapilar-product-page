@@ -39,9 +39,9 @@
           <h1 class="max-w-4xl font-display text-4xl leading-[1.02] tracking-[-.04em] sm:text-6xl">Games, roupas e cuidados masculinos com link</h1>
           <p class="mt-6 max-w-2xl text-sm leading-7 text-white/65">Ofertas masculinas selecionadas para facilitar sua escolha. Preços, disponibilidade e condições são confirmados no anúncio do Mercado Livre.</p>
         </div>
-        <div class="grid grid-cols-2 gap-3 self-end">
-          <div class="rounded-2xl border border-white/10 bg-white/[.06] p-5"><strong class="font-display text-3xl text-[#dfc38c]">4</strong><span class="mt-1 block text-xs text-white/55">exemplos com link</span></div>
-          <div class="rounded-2xl border border-white/10 bg-white/[.06] p-5"><strong class="font-display text-3xl text-[#dfc38c]">4</strong><span class="mt-1 block text-xs text-white/55">categorias masculinas</span></div>
+          <div class="grid grid-cols-2 gap-3 self-end">
+          <div class="rounded-2xl border border-white/10 bg-white/[.06] p-5"><strong class="font-display text-3xl text-[#dfc38c]">20</strong><span class="mt-1 block text-xs text-white/55">ofertas com link</span></div>
+          <div class="rounded-2xl border border-white/10 bg-white/[.06] p-5"><strong class="font-display text-3xl text-[#dfc38c]">7</strong><span class="mt-1 block text-xs text-white/55">categorias masculinas</span></div>
         </div>
       </div>
     </section>
@@ -54,12 +54,12 @@
 
       <div id="tabs" class="mb-7 flex gap-2 overflow-x-auto pb-2" role="tablist" aria-label="Filtrar produtos por categoria">
         <button class="tab shrink-0 rounded-full border border-black/15 px-4 py-2 text-xs font-bold transition" data-filter="todos" aria-selected="true">Todos</button>
-        <button class="tab shrink-0 rounded-full border border-black/15 px-4 py-2 text-xs font-bold transition" data-filter="games" aria-selected="false">Games</button><button class="tab shrink-0 rounded-full border border-black/15 px-4 py-2 text-xs font-bold transition" data-filter="roupas" aria-selected="false">Roupas Masculinas</button><button class="tab shrink-0 rounded-full border border-black/15 px-4 py-2 text-xs font-bold transition" data-filter="barba-cabelo" aria-selected="false">Barba &amp; Cabelo</button>
+        <button class="tab shrink-0 rounded-full border border-black/15 px-4 py-2 text-xs font-bold transition" data-filter="games" aria-selected="false">Games</button><button class="tab shrink-0 rounded-full border border-black/15 px-4 py-2 text-xs font-bold transition" data-filter="roupas" aria-selected="false">Roupas Masculinas</button><button class="tab shrink-0 rounded-full border border-black/15 px-4 py-2 text-xs font-bold transition" data-filter="barba-cabelo" aria-selected="false">Barba &amp; Cabelo</button><button class="tab shrink-0 rounded-full border border-black/15 px-4 py-2 text-xs font-bold transition" data-filter="ferramentas" aria-selected="false">Ferramentas</button><button class="tab shrink-0 rounded-full border border-black/15 px-4 py-2 text-xs font-bold transition" data-filter="tecnologia" aria-selected="false">Tecnologia</button><button class="tab shrink-0 rounded-full border border-black/15 px-4 py-2 text-xs font-bold transition" data-filter="acessorios" aria-selected="false">Acessórios</button>
         <button class="tab shrink-0 rounded-full border border-black/15 px-4 py-2 text-xs font-bold transition" data-filter="perfumes" aria-selected="false">Perfumes</button>
         
       </div>
 
-      <div class="mb-5 flex items-center justify-between gap-4 text-xs text-black/50"><p id="resultCount" aria-live="polite">2 exemplos com link encontrados</p><p class="hidden sm:block">4 exemplos ativos · somente ofertas liberadas</p></div>
+      <div class="mb-5 flex items-center justify-between gap-4 text-xs text-black/50"><p id="resultCount" aria-live="polite">20 ofertas com link encontradas</p><p class="hidden sm:block">20 ofertas ativas · somente links liberados</p></div>
       <div id="productGrid" class="grid grid-cols-1 gap-4 min-[430px]:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"></div>
       <div id="emptyState" class="hidden rounded-2xl border border-dashed border-black/15 bg-white p-10 text-center"><h3 class="font-display text-2xl">Nenhum produto encontrado</h3><p class="mt-2 text-sm text-black/50">Tente outro termo ou selecione a aba “Todos”.</p></div>
     </section>
@@ -101,7 +101,14 @@
       'perfume-08':'https://meli.la/25Y661u',
       'perfume-09':'https://meli.la/1YcXXTq',
       'roupa-01':'https://meli.la/127D3t4',
-      'game-01':'https://meli.la/2zRQSV7'
+      'game-01':'https://meli.la/2zRQSV7',
+      'ferramenta-01':'https://meli.la/1c9h8UY',
+      'game-02':'https://meli.la/2DnAkcA',
+      'game-03':'https://meli.la/26NgNoX',
+      'game-04':'https://meli.la/2bCQYpa',
+      'tech-01':'https://meli.la/32gutB3',
+      'acessorio-01':'https://meli.la/14QaM9R',
+      'tech-02':'https://meli.la/1zqHVKM'
     });
 
     const products = [
@@ -109,6 +116,13 @@
       {id:'barba-02',group:'barba-cabelo',category:'Barba & Cabelo',brand:'ML',name:'Máquina Profissional sem Fio com Visor LED e Regulagem',badge:'Link Validado',code:'X2B1NG-HNCL',image:'/manus-storage/barba-hncl_e49d241e.webp',search:'https://lista.mercadolivre.com.br/X2B1NG-HNCL'},
       {id:'roupa-01',group:'roupas',category:'Roupas Masculinas',brand:'Mercado Livre',name:'Kit 3 Camisetas Masculinas 100% Algodão Premium',badge:'Link Validado',code:'X2B1NG-9ABX',search:'https://lista.mercadolivre.com.br/X2B1NG-9ABX'},
       {id:'game-01',group:'games',category:'Games',brand:'PlayStation',name:'Console PlayStation 5 Slim Edição Digital',badge:'Link Validado',code:'X2B1NG-AT7Y',search:'https://lista.mercadolivre.com.br/X2B1NG-AT7Y'},
+      {id:'ferramenta-01',group:'ferramentas',category:'Ferramentas',brand:'Simake',name:'Parafusadeira Furadeira com 2 Baterias e Maleta',badge:'Link Validado',code:'X2B1NG-LW3U',image:'/manus-storage/parafusadeira_3bd7df9b.webp',search:'https://lista.mercadolivre.com.br/X2B1NG-LW3U'},
+      {id:'game-02',group:'games',category:'Games',brand:'PlayStation',name:'Sony PlayStation Store Gift Card R$ 450 Digital',badge:'Link Validado',code:'X2B1NG-VHJ7',image:'/manus-storage/playstation-giftcard_8b1dcb32.webp',search:'https://lista.mercadolivre.com.br/X2B1NG-VHJ7'},
+      {id:'game-03',group:'games',category:'Games',brand:'Sony',name:'Controle DualSense sem Fio White para PS5',badge:'Link Validado',code:'X2B1NG-4BY6',image:'/manus-storage/dualsense_6435a9c3.webp',search:'https://lista.mercadolivre.com.br/X2B1NG-4BY6'},
+      {id:'game-04',group:'games',category:'Games',brand:'Razer',name:'Razer Gold Digital R$ 500',badge:'Link Validado',code:'X2B1NG-AZR3',image:'/manus-storage/razer-gold_67cbb812.webp',search:'https://lista.mercadolivre.com.br/X2B1NG-AZR3'},
+      {id:'tech-01',group:'tecnologia',category:'Tecnologia',brand:'Samsung',name:'Galaxy A57 12 GB 512 GB Awesome Navy',badge:'Link Validado',code:'X2B1NG-YBQY',image:'/manus-storage/samsung-a57_767b659e.webp',search:'https://lista.mercadolivre.com.br/X2B1NG-YBQY'},
+      {id:'acessorio-01',group:'acessorios',category:'Acessórios para veículos',brand:'Mixs',name:'Capacete Robocop Escamoteável Gladiator',badge:'Link Validado',code:'X2B1NG-3ZF0',image:'/manus-storage/capacete_a12322de.webp',search:'https://lista.mercadolivre.com.br/X2B1NG-3ZF0'},
+      {id:'tech-02',group:'tecnologia',category:'Tecnologia',brand:'Baseus',name:'Carregador portátil MagSafe 5000 mAh 20 W',badge:'Link Validado',code:'X2B1NG-FV7Z',image:'/manus-storage/carregador-baseus_2b6f9aac.webp',search:'https://lista.mercadolivre.com.br/X2B1NG-FV7Z'},
       {id:'barba-03',group:'barba-cabelo',category:'Barba & Cabelo',brand:'Mondial',name:'Hair Stylo CR-02',badge:'Custo-Benefício',search:'https://lista.mercadolivre.com.br/mondial-hair-stylo-cr-02'},
       {id:'barba-04',group:'barba-cabelo',category:'Barba & Cabelo',brand:'Mondial',name:'Hair Stylo CR-07',badge:'Melhor Avaliado',search:'https://lista.mercadolivre.com.br/mondial-hair-stylo-cr-07'},
       {id:'barba-05',group:'barba-cabelo',category:'Barba & Cabelo',brand:'Philips',name:'Multigroom Series 5000 MG5730/15',badge:'Mais Procurado',search:'https://lista.mercadolivre.com.br/philips-multigroom-mg5730-15'},
@@ -210,7 +224,7 @@
     ];
 
     const linkedProducts = products.filter(product => Boolean(AFFILIATE_LINKS[product.id]));
-    const featuredProducts = linkedProducts.filter((product, index, list) => list.findIndex(item => item.group === product.group) === index);
+    const featuredProducts = linkedProducts;
     const state = {filter:'todos', query:''};
     const grid = document.querySelector('#productGrid');
     const resultCount = document.querySelector('#resultCount');
