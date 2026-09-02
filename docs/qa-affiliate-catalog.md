@@ -15,3 +15,11 @@ A página `/beleza-mais-vendidos.html` agora apresenta 20 ofertas com links meli
 ### Revisão visual
 
 A vitrine ampliada foi revisada em celular de 390 × 1100 e desktop de 1440 × 1000. A composição preserva a leitura móvel, a busca, os filtros horizontais e os cards com badge de link validado. Em desktop, os filtros de Games, Roupas Masculinas, Barba & Cabelo, Ferramentas, Tecnologia, Acessórios e Perfumes permanecem visíveis e a grade usa quatro colunas sem sobreposição. A quantidade apresentada, 20 ofertas, corresponde aos links `meli.la` únicos validados pela auditoria estática.
+
+## Lote de suplementos e limpeza
+
+Foram adicionados três cards de ofertas com destino verificável: percarbonato de sódio (Casa & Limpeza), creatina Soldiers Nutrition e whey Black Skull (Suplementos). O link VEU7 não foi exibido porque o destino público apresentou produtos distintos em verificações sucessivas. A vitrine agora possui 23 links `meli.la` únicos, 21 imagens reais e 9 categorias ativas; os preços permanecem sujeitos à confirmação no anúncio do Mercado Livre.
+
+### Conferência final de contadores
+
+A captura móvel final confirmou os indicadores de **23 ofertas com link** e **9 categorias ativas**, além da continuidade da navegação horizontal de filtros sem quebra de layout. A contagem na interface e na auditoria estática está alinhada.
