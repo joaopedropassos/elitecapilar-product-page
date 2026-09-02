@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { createDirectSalePixPayment, createMercadoPagoPreference, createPromotionalPixPayment, createPromotionalPixPreference } from "./mercadopago";
+import { createCatalogDirectPixPayment, createDirectSalePixPayment, createMercadoPagoPreference, createPromotionalPixPayment, createPromotionalPixPreference } from "./mercadopago";
 
 afterEach(() => vi.unstubAllGlobals());
 
@@ -94,5 +94,23 @@ describe("Mercado Pago Checkout Pro", () => {
     expect(payload.external_reference).toBe("EC-PEDIDO-123");
     expect(payload.metadata).toEqual({ order_number: "PEDIDO123", sale_model: "direct_resale" });
     expect((options.headers as Record<string, string>)["X-Idempotency-Key"]).toBe("EC-PEDIDO-123");
+  });
+
+  it("calculates 10% Pix discount from the selected catalog product price", async () => {
+    const fetchMock = vi.fn().mockResolvedValue(new Response(JSON.stringify({
+      id: 111222,
+      status: "pending",
+      point_of_interaction: { transaction_data: { qr_code_base64: "cXItY2F0YWxvZw==", qr_code: "000201pix-catalogo" } },
+    }), { status: 201, headers: { "Content-Type": "application/json" } }));
+    vi.stubGlobal("fetch", fetchMock);
+
+    const result = await createCatalogDirectPixPayment({ productId: "perfume-01", email: "cliente@example.com", externalReference: "TC-PEDIDO-123", orderNumber: "PEDIDO123" });
+    const options = fetchMock.mock.calls[0]?.[1] as RequestInit;
+    const payload = JSON.parse(String(options.body)) as { transaction_amount: number; payment_method_id: string; metadata: { product_id: string; discount_percent: number } };
+
+    expect(result.totalCents).toBe(8091);
+    expect(payload.transaction_amount).toBe(80.91);
+    expect(payload.payment_method_id).toBe("pix");
+    expect(payload.metadata).toMatchObject({ product_id: "perfume-01", discount_percent: 10 });
   });
 });

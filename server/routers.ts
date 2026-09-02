@@ -4,7 +4,7 @@ import { ENV } from "./_core/env";
 import { systemRouter } from "./_core/systemRouter";
 import { adminProcedure, publicProcedure, router } from "./_core/trpc";
 import { attachPaymentToOrder, createOrder, getOrderStatus, listOrders, updateOrderFulfillment, updateOrderPaymentStatus } from "./db";
-import { createDirectSalePixPayment, createMercadoPagoPreference, createPromotionalPixPayment, createPromotionalPixPreference, DIRECT_PIX_PRICE, PRODUCT } from "./mercadopago";
+import { CATALOG_PRODUCTS, createCatalogDirectPixPayment, createDirectSalePixPayment, createMercadoPagoPreference, createPromotionalPixPayment, createPromotionalPixPreference, DIRECT_PIX_PRICE, PRODUCT } from "./mercadopago";
 import { z } from "zod";
 
 const directOrderInput = z.object({
@@ -25,6 +25,10 @@ const directOrderInput = z.object({
 }).refine((data) => data.email === data.emailConfirmation, {
   message: "Os e-mails informados não coincidem",
   path: ["emailConfirmation"],
+});
+
+const catalogPixOrderInput = directOrderInput.safeExtend({
+  productId: z.enum(["barba-01", "perfume-01", "roupa-01", "game-01"]),
 });
 
 export const appRouter = router({
@@ -95,6 +99,48 @@ export const appRouter = router({
           const payment = await createDirectSalePixPayment({ email: input.email, externalReference, orderNumber });
           await attachPaymentToOrder(orderNumber, payment.paymentId);
           return { ...payment, orderNumber, totalCents: DIRECT_PIX_PRICE * 100 };
+        } catch (error) {
+          await updateOrderPaymentStatus(externalReference, "payment_failed");
+          throw error;
+        }
+      }),
+    createCatalogOrderPix: publicProcedure
+      .input(catalogPixOrderInput)
+      .mutation(async ({ input }) => {
+        if (!ENV.directSalesEnabled || !ENV.sellerLegalName || !ENV.sellerTaxId || !ENV.sellerSupportEmail || !ENV.directSalesShippingEstimate) {
+          throw new Error("Venda direta aguardando cadastro completo do vendedor");
+        }
+        const product = CATALOG_PRODUCTS[input.productId];
+        const orderNumber = `TC${Date.now().toString(36).toUpperCase()}${crypto.randomUUID().slice(0, 4).toUpperCase()}`;
+        const externalReference = `TC-${orderNumber}-${crypto.randomUUID().slice(0, 8)}`;
+        const totalCents = Math.floor(product.fullPriceCents * 0.9);
+        await createOrder({
+          orderNumber,
+          externalReference,
+          status: "creating_payment",
+          productId: input.productId,
+          productTitle: product.title,
+          quantity: 1,
+          originalPriceCents: product.fullPriceCents,
+          discountPercent: 10,
+          totalCents,
+          customerName: input.name,
+          customerEmail: input.email,
+          customerPhone: input.phone,
+          postalCode: input.postalCode,
+          street: input.street,
+          addressNumber: input.addressNumber,
+          complement: input.complement || null,
+          neighborhood: input.neighborhood,
+          city: input.city,
+          state: input.state,
+          consentTerms: input.consentTerms,
+          consentPrivacy: input.consentPrivacy,
+        });
+        try {
+          const payment = await createCatalogDirectPixPayment({ productId: input.productId, email: input.email, externalReference, orderNumber });
+          await attachPaymentToOrder(orderNumber, payment.paymentId);
+          return { ...payment, orderNumber, productTitle: product.title, fullPriceCents: product.fullPriceCents };
         } catch (error) {
           await updateOrderPaymentStatus(externalReference, "payment_failed");
           throw error;

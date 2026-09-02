@@ -9,6 +9,7 @@ const mocks = vi.hoisted(() => ({
   listOrders: vi.fn(),
   updateOrderFulfillment: vi.fn(),
   createDirectSalePixPayment: vi.fn(),
+  createCatalogDirectPixPayment: vi.fn(),
 }));
 
 vi.mock("./db", () => ({
@@ -23,9 +24,16 @@ vi.mock("./db", () => ({
 }));
 
 vi.mock("./mercadopago", () => ({
+  CATALOG_PRODUCTS: {
+    "barba-01": { title: "Máquina Profissional Wahl Magic Clip Black Sem Fio", fullPriceCents: 61000 },
+    "perfume-01": { title: "Perfume de Feromônios Dominus Men 50 ml", fullPriceCents: 8990 },
+    "roupa-01": { title: "Kit 3 Camisetas Masculinas 100% Algodão Premium", fullPriceCents: 6799 },
+    "game-01": { title: "Console PlayStation 5 Slim Edição Digital", fullPriceCents: 449000 },
+  },
   PRODUCT: { id: "elitecapilar-micro-stubble-001", title: "Sistema Capilar de Micro-Stubble Aero-Densidade", unitPrice: 1250, currencyId: "BRL" },
   DIRECT_PIX_PRICE: 1125,
   createDirectSalePixPayment: mocks.createDirectSalePixPayment,
+  createCatalogDirectPixPayment: mocks.createCatalogDirectPixPayment,
   createMercadoPagoPreference: vi.fn(),
   createPromotionalPixPayment: vi.fn(),
   createPromotionalPixPreference: vi.fn(),
@@ -70,6 +78,7 @@ beforeEach(() => {
   ENV.directSalesShippingEstimate = "5 a 10 dias úteis";
   mocks.createOrder.mockResolvedValue({ id: 1 });
   mocks.createDirectSalePixPayment.mockResolvedValue({ paymentId: "123", status: "pending", qrCodeBase64: "cXI=", qrCode: "000201", ticketUrl: null, expiresAt: null });
+  mocks.createCatalogDirectPixPayment.mockResolvedValue({ paymentId: "456", status: "pending", qrCodeBase64: "cXI=", qrCode: "000201", ticketUrl: null, expiresAt: null, totalCents: 8091 });
   mocks.attachPaymentToOrder.mockResolvedValue(undefined);
   mocks.updateOrderPaymentStatus.mockResolvedValue(undefined);
   mocks.listOrders.mockResolvedValue([]);
@@ -104,6 +113,23 @@ describe("payments.createDirectOrderPix", () => {
   it("requires matching confirmation email", async () => {
     await expect(appRouter.createCaller(createContext()).payments.createDirectOrderPix({ ...validInput, emailConfirmation: "outro@example.com" })).rejects.toThrow();
     expect(mocks.createOrder).not.toHaveBeenCalled();
+  });
+
+  it("creates a Pix order for the selected catalog product at 10% off", async () => {
+    const result = await appRouter.createCaller(createContext()).payments.createCatalogOrderPix({ ...validInput, productId: "perfume-01" });
+
+    expect(mocks.createOrder).toHaveBeenCalledWith(expect.objectContaining({
+      productId: "perfume-01",
+      productTitle: "Perfume de Feromônios Dominus Men 50 ml",
+      originalPriceCents: 8990,
+      discountPercent: 10,
+      totalCents: 8091,
+      postalCode: "01001-000",
+      street: "Praça da Sé",
+      addressNumber: "100",
+    }));
+    expect(mocks.createCatalogDirectPixPayment).toHaveBeenCalledWith(expect.objectContaining({ productId: "perfume-01", email: "cliente@example.com" }));
+    expect(result).toMatchObject({ paymentId: "456", totalCents: 8091, fullPriceCents: 8990 });
   });
 });
 

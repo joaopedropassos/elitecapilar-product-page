@@ -9,3 +9,19 @@ A página principal foi atualizada com navegação masculina: Barba & Cabelo, Pe
 Após a solicitação do usuário, foram removidas da home a galeria, as imagens de prótese, os cards de catálogo de próteses e a seção de fotos antes/depois. O espaço principal agora usa um visual abstrato da marca, sem fotografia de cabelo ou peruca. A navegação da home foi ampliada para Games, Roupas Masculinas, Barba & Cabelo, Perfumes Masculinos, Cuidados de Pele, Óleos Capilares e Ofertas com link.
 
 O catálogo passou a exibir um exemplo com link afiliado por categoria disponível: Games, Roupas Masculinas, Barba & Cabelo e Perfumes. A revisão em viewport desktop confirmou a ausência de fotos de prótese na home e a presença dos quatro exemplos no catálogo.
+
+## Revisão de assets — Games e Roupas
+
+A vitrine foi revisada em viewport móvel de 390 × 844 e desktop de 1280 × 900. Os placeholders textuais foram substituídos por imagens de produto com fundo claro: o kit de três camisetas masculinas e o Console PlayStation 5 Slim Digital. Os quatro cards renderizam sem distorção visível; a grade mobile continua em duas colunas e a desktop em quatro. A home permanece sem imagens de perucas ou próteses.
+
+## Checkout Pix prioritário
+
+A hierarquia de compra foi alterada: cada card apresenta o botão verde **Pagar via Pix · 10% OFF** como ação principal, calculando 90% do preço cheio do produto. O modal solicita e-mail confirmado, dados de entrega e consentimentos antes de criar o pedido via Mercado Pago. O link do Mercado Livre permanece visível como alternativa secundária e comissionada. A rota usa um catálogo fechado no backend para impedir que o preço ou produto sejam alterados pelo navegador.
+
+A cobertura automatizada inclui a criação do pagamento Pix por produto, QR Code e cálculo de 10% de desconto; TypeScript, 11 testes, auditoria do catálogo e build foram aprovados.
+
+## Validação ponta a ponta — Pix por produto
+
+A configuração comercial foi ativada e validada pelo endpoint público de status. Um smoke test real, sem pagamento efetuado, criou um Pix pendente para o produto `perfume-01`: preço cheio de R$ 89,90 e total de R$ 80,91, exatamente 10% de desconto. A resposta incluiu identificador de pagamento, número de pedido, QR Code e código Pix copia e cola. O formulário obrigatório persiste nome, e-mail confirmado, WhatsApp, CEP e endereço completo antes da geração do Pix.
+
+O mascote foi inserido no topo da página inicial com movimento vertical discreto e desativação automática da animação para pessoas que preferem movimento reduzido.

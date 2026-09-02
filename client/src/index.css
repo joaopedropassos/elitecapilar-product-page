@@ -480,3 +480,12 @@ a { color: inherit; text-decoration: none; }
 .marketplace-bottom-nav a:nth-child(2) { color: #2574d9; }
 .marketplace-bottom-nav span { font-size: 11px; }
 @media (max-width: 420px) { .marketplace-logo { font-size: 17px; } .marketplace-product-card { padding: 10px; } .marketplace-cart { width: 36px; height: 36px; } }
+
+.mascot-banner { position: relative; display: flex; min-height: 190px; align-items: center; justify-content: space-between; background: radial-gradient(circle at 78% 35%, #4c3a18 0, transparent 28%), linear-gradient(105deg, #101820 0%, #182c32 58%, #080a0c 100%); color: #fff; }
+.mascot-copy { position: relative; z-index: 1; max-width: 55%; padding: 24px 0 24px 28px; }
+.mascot-copy h2 { margin: 5px 0 7px; font-size: clamp(22px, 4vw, 38px); font-weight: 900; line-height: 1.04; letter-spacing: -.045em; }
+.mascot-copy p:last-child { margin: 0; color: #d7dde1; font-size: 13px; }
+.mascot-image { align-self: stretch; width: 42%; min-height: 190px; object-fit: contain; object-position: center right; filter: drop-shadow(0 10px 16px rgba(0,0,0,.35)); animation: mascot-float 3.8s ease-in-out infinite; }
+@keyframes mascot-float { 0%, 100% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(-5px) rotate(.6deg); } }
+@media (max-width: 520px) { .mascot-banner { min-height: 155px; } .mascot-copy { max-width: 59%; padding: 20px 0 20px 18px; } .mascot-copy h2 { font-size: 22px; } .mascot-copy p:last-child { font-size: 11px; } .mascot-image { width: 47%; min-height: 155px; } }
+@media (prefers-reduced-motion: reduce) { .mascot-image { animation: none; } }

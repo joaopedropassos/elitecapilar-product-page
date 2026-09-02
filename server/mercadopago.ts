@@ -14,6 +14,15 @@ export const PRODUCT = {
 
 export const DIRECT_PIX_PRICE = 1125;
 
+export const CATALOG_PRODUCTS = {
+  "barba-01": { title: "Máquina Profissional Wahl Magic Clip Black Sem Fio", fullPriceCents: 61000 },
+  "perfume-01": { title: "Perfume de Feromônios Dominus Men 50 ml", fullPriceCents: 8990 },
+  "roupa-01": { title: "Kit 3 Camisetas Masculinas 100% Algodão Premium", fullPriceCents: 6799 },
+  "game-01": { title: "Console PlayStation 5 Slim Edição Digital", fullPriceCents: 449000 },
+} as const;
+
+export type CatalogProductId = keyof typeof CATALOG_PRODUCTS;
+
 function mercadoPagoHeaders() {
   if (!ENV.mercadoPagoAccessToken) {
     throw new Error("MERCADOPAGO_ACCESS_TOKEN não configurado");
@@ -245,6 +254,54 @@ export async function createDirectSalePixPayment(input: { email: string; externa
     qrCode: transactionData.qr_code,
     ticketUrl: transactionData.ticket_url ?? null,
     expiresAt: payment.date_of_expiration ?? null,
+  };
+}
+
+export async function createCatalogDirectPixPayment(input: { email: string; externalReference: string; orderNumber: string; productId: CatalogProductId }) {
+  const product = CATALOG_PRODUCTS[input.productId];
+  const totalCents = Math.floor(product.fullPriceCents * 0.9);
+  const response = await mercadoPagoFetch(`${MERCADO_PAGO_API}/v1/payments`, {
+    method: "POST",
+    headers: {
+      ...mercadoPagoHeaders(),
+      "X-Idempotency-Key": input.externalReference,
+    },
+    body: JSON.stringify({
+      transaction_amount: totalCents / 100,
+      description: `${product.title} · Venda direta Pix com 10% de desconto`,
+      payment_method_id: "pix",
+      payer: { email: input.email },
+      notification_url: `${ENV.publicSiteUrl}/api/mercadopago/webhook`,
+      external_reference: input.externalReference,
+      metadata: { order_number: input.orderNumber, product_id: input.productId, sale_model: "direct_resale", discount_percent: 10 },
+    }),
+  });
+
+  if (!response.ok) {
+    const errorBody = await response.text();
+    console.error("[Mercado Pago] Catalog Pix payment failed", response.status, errorBody.slice(0, 500));
+    throw new Error("Não foi possível gerar o Pix do produto");
+  }
+
+  const payment = await response.json() as {
+    id?: number;
+    status?: string;
+    date_of_expiration?: string;
+    point_of_interaction?: { transaction_data?: { qr_code_base64?: string; qr_code?: string; ticket_url?: string } };
+  };
+  const transactionData = payment.point_of_interaction?.transaction_data;
+  if (!payment.id || !transactionData?.qr_code_base64 || !transactionData.qr_code) {
+    throw new Error("O Mercado Pago não retornou os dados do Pix");
+  }
+
+  return {
+    paymentId: String(payment.id),
+    status: payment.status ?? "pending",
+    qrCodeBase64: transactionData.qr_code_base64,
+    qrCode: transactionData.qr_code,
+    ticketUrl: transactionData.ticket_url ?? null,
+    expiresAt: payment.date_of_expiration ?? null,
+    totalCents,
   };
 }
 

@@ -9,7 +9,7 @@ export const ENV = {
   forgeApiKey: process.env.BUILT_IN_FORGE_API_KEY ?? "",
   mercadoPagoAccessToken: process.env.MERCADOPAGO_ACCESS_TOKEN ?? "",
   publicSiteUrl: process.env.PUBLIC_SITE_URL ?? "https://protesecapilar.tech",
-  directSalesEnabled: process.env.DIRECT_SALES_ENABLED === "true",
+  directSalesEnabled: (process.env.DIRECT_SALES_ENABLED ?? "").trim().toLowerCase() === "true",
   sellerLegalName: process.env.SELLER_LEGAL_NAME ?? "",
   sellerTaxId: process.env.SELLER_TAX_ID ?? "",
   sellerSupportEmail: process.env.SELLER_SUPPORT_EMAIL ?? "",
