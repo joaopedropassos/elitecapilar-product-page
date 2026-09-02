@@ -23,3 +23,13 @@ Foram adicionados três cards de ofertas com destino verificável: percarbonato 
 ### Conferência final de contadores
 
 A captura móvel final confirmou os indicadores de **23 ofertas com link** e **9 categorias ativas**, além da continuidade da navegação horizontal de filtros sem quebra de layout. A contagem na interface e na auditoria estática está alinhada.
+
+## Lote de relógios — 1º de setembro de 2026
+
+Cinco ofertas com destino e produto confirmados foram adicionadas à categoria **Relógios**: Poedagar Oldmoney, Saint Germain Chroma, Casio G-Shock GA-2100, Casio G-Shock DW-5600BB e OPK 6045 Quartz. Cada card usa um link `meli.la` único, badge de link validado e imagem pública associada.
+
+Os links TAJ9, 6BC9, 1CY2 e MD90 foram excluídos por abrirem vitrines com vários produtos. Os links 4A5J e FR3A foram mantidos fora por apresentarem destaques instáveis. O link 0G4Z permanece inválido/sem destino. A auditoria passou com 35 links únicos, 33 imagens reais e 124 produtos editoriais na fonte.
+
+### Revisão móvel
+
+A pré-visualização em 390 × 1100 confirmou os indicadores de 35 ofertas e 14 categorias ativas, com busca, filtros de rolagem horizontal e primeira linha de cards preservados. A aba Relógios foi adicionada à sequência de filtros sem interferir nos filtros existentes.
