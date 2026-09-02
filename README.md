@@ -1,4 +1,4 @@
-# EliteCapilar.com.br
+# TOCA DO MACHO
 
 Loja responsiva de próteses capilares com dois fluxos comerciais independentes: **venda direta com 10% de desconto no Pix** e **catálogo com links comissionados `meli.la` para compra direta no Mercado Livre**.
 
@@ -6,7 +6,7 @@ Loja responsiva de próteses capilares com dois fluxos comerciais independentes:
 
 | Fluxo | Quem recebe o pagamento | Responsável por entrega e pós-venda | Uso de link afiliado |
 |---|---|---|---|
-| Venda direta Pix | EliteCapilar.com.br, via Mercado Pago | EliteCapilar.com.br | Não |
+| Venda direta Pix | TOCA DO MACHO, via Mercado Pago | TOCA DO MACHO | Não |
 | Catálogo Mercado Livre | Mercado Livre/vendedor do anúncio | Vendedor do Mercado Livre | Link `meli.la` consciente e visível |
 
 O checkout próprio registra pedido, cliente, endereço, consentimentos e identificador do pagamento. O webhook consulta o pagamento diretamente na API do Mercado Pago, atualiza o status no banco e notifica o proprietário quando o Pix é aprovado. O painel protegido `/admin/pedidos` permite registrar a referência da compra feita no fornecedor, código de rastreamento e andamento da entrega.

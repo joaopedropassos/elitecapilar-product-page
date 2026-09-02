@@ -158,7 +158,7 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-[#fbfaf8] text-[#24231f]">
       <div className="top-strip px-4 py-2.5 text-center text-[10px] font-semibold uppercase tracking-[0.26em] text-white sm:text-[11px]">
-        Premium Brazilian Hair Replacement
+        TOCA DO MACHO · 10% DE DESCONTO NO PIX
       </div>
 
       <header className="border-b border-[#ece8e1] bg-[#fbfaf8]/95 backdrop-blur-xl">
@@ -170,9 +170,9 @@ export default function Home() {
           >
             {menuOpen ? <X size={21} strokeWidth={1.7} /> : <Menu size={21} strokeWidth={1.7} />}
           </button>
-          <a href="#top" className="brand whitespace-nowrap" aria-label="EliteCapilar.com.br">
-            <span className="brand-mark">e</span>
-            <span>EliteCapilar<span className="brand-domain">.com.br</span></span>
+          <a href="#top" className="brand whitespace-nowrap" aria-label="TOCA DO MACHO">
+            <span className="brand-mark">t</span>
+            <span>TOCA DO MACHO</span>
           </a>
 
           <div className="relative mx-auto hidden w-full max-w-[520px] lg:block">
@@ -223,14 +223,14 @@ export default function Home() {
 
         <nav className="hidden border-t border-[#efede9] lg:block" aria-label="Categorias principais">
           <div className="mx-auto flex max-w-[1440px] items-center justify-center gap-10 px-10 py-3.5">
-            {["Prótese Capilar", "Próteses Curtas", "Estilo Raspado", "Sistemas Premium"].map((item) => (
+            {["Barba & Cabelo", "Perfumes Masculinos", "Cuidados de Pele", "Óleos Capilares"].map((item) => (
               <a key={item} href="#produto" className="nav-link group">
                 {item}
                 <ChevronDown size={13} className="transition group-hover:translate-y-0.5" />
               </a>
             ))}
             <a href="/beleza-mais-vendidos.html" className="nav-link group text-[#087a5b]">
-              Top 100 Beleza
+              Ofertas com link
               <ExternalLink size={13} className="transition group-hover:translate-x-0.5" />
             </a>
           </div>
@@ -240,14 +240,14 @@ export default function Home() {
           <div className="mobile-menu border-t border-[#ece8e1] bg-white px-5 py-5 lg:hidden">
             <p className="mb-4 text-[10px] font-bold uppercase tracking-[0.2em] text-[#a09484]">Explorar coleção</p>
             <div className="grid gap-1">
-              {["Prótese Capilar", "Próteses Curtas", "Estilo Raspado", "Sistemas Premium"].map((item, index) => (
+              {["Barba & Cabelo", "Perfumes Masculinos", "Cuidados de Pele", "Óleos Capilares"].map((item, index) => (
                 <a key={item} href="#produto" onClick={() => setMenuOpen(false)} className="flex items-center justify-between border-b border-[#f1eee9] py-3.5 text-[15px] font-medium">
                   <span><span className="mr-3 text-xs text-[#b6a68f]">0{index + 1}</span>{item}</span>
                   <ArrowRight size={16} className="text-[#a09484]" />
                 </a>
               ))}
               <a href="/beleza-mais-vendidos.html" onClick={() => setMenuOpen(false)} className="flex items-center justify-between border-b border-[#f1eee9] py-3.5 text-[15px] font-medium text-[#087a5b]">
-                <span><span className="mr-3 text-xs text-[#b6a68f]">05</span>Top 100 Beleza</span>
+                <span><span className="mr-3 text-xs text-[#b6a68f]">05</span>Ofertas com link</span>
                 <ExternalLink size={16} />
               </a>
             </div>
@@ -265,8 +265,8 @@ export default function Home() {
         <section className="promo-banner mb-8" aria-label="Oferta promocional Pix">
           <div className="promo-copy">
             <div className="promo-kicker"><span className="promo-live-dot" /> Oferta exclusiva · tempo limitado</div>
-            <h2>Seu novo visual por <strong>R$ 1.125,00 no Pix</strong></h2>
-            <p>10% de desconto na venda direta. Pedido, atendimento e entrega sob responsabilidade da EliteCapilar.com.br.</p>
+            <h2>Todo o site com <strong>10% de desconto no Pix</strong></h2>
+            <p>Na compra direta pelo site, pague via Pix e aproveite 10% de desconto. Ofertas do Mercado Livre seguem o anúncio.</p>
           </div>
           <button onClick={handleAddToCart} className="promo-button">{directSalesStatus?.enabled ? "Garantir oferta" : "Em homologação"} <ArrowRight size={16} /></button>
         </section>
@@ -398,7 +398,7 @@ export default function Home() {
               <p className="installment"><strong>Pagamento à vista via Pix</strong></p>
 
               <div className="installment-select">
-                <span>Venda direta pela EliteCapilar.com.br</span>
+                <span>Venda direta pela TOCA DO MACHO</span>
                 <ShieldCheck size={16} />
               </div>
 
@@ -519,7 +519,7 @@ export default function Home() {
             ) : (
               <>
                 <h2 id="promo-title" className="font-serif text-[30px] leading-none tracking-[-.03em]">Entrega e pagamento</h2>
-                <p className="mt-3 text-[13px] leading-[1.65] text-[#756e64]">A EliteCapilar.com.br será a vendedora responsável. Preencha os dados necessários para entrega e confirme o Pix no seu banco.</p>
+                <p className="mt-3 text-[13px] leading-[1.65] text-[#756e64]">A TOCA DO MACHO será a vendedora responsável. Preencha os dados necessários para entrega e confirme o Pix no seu banco.</p>
                 {directSalesStatus?.seller && <div className="direct-seller-card"><span><small>Vendedor</small><strong>{directSalesStatus.seller.legalName}</strong></span><span><small>CPF/CNPJ</small><strong>{directSalesStatus.seller.taxId}</strong></span><span><small>Prazo estimado</small><strong>{directSalesStatus.seller.shippingEstimate}</strong></span><span><small>Suporte</small><strong>{directSalesStatus.seller.supportEmail}</strong></span></div>}
                 <div className="direct-checkout-grid mt-6">
                   <label className="promo-field direct-full"><span>Nome completo</span><input autoComplete="name" value={directOrder.name} onChange={(event) => setDirectOrder({ ...directOrder, name: event.target.value })} placeholder="Nome do destinatário" autoFocus /></label>
@@ -547,7 +547,7 @@ export default function Home() {
         </div>
       )}
 
-      <a href="#whatsapp" className="whatsapp-fab" aria-label="Falar com a EliteCapilar no WhatsApp" onClick={() => toast.success("Abrindo atendimento EliteCapilar") }>
+      <a href="#whatsapp" className="whatsapp-fab" aria-label="Falar com a TOCA DO MACHO no WhatsApp" onClick={() => toast.success("Abrindo atendimento TOCA DO MACHO") }>
         <span className="whatsapp-ring" />
         <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M20.52 3.48A11.8 11.8 0 0 0 12.08 0C5.55 0 .24 5.31.24 11.84c0 2.09.55 4.13 1.6 5.92L.14 24l6.39-1.67a11.8 11.8 0 0 0 5.55 1.4h.01c6.52 0 11.83-5.31 11.83-11.84a11.8 11.8 0 0 0-3.4-8.41ZM12.09 21.7h-.01a9.82 9.82 0 0 1-5.01-1.37l-.36-.21-3.79.99 1.01-3.69-.23-.38a9.82 9.82 0 1 1 8.39 4.66Zm5.39-7.36c-.29-.15-1.72-.85-1.99-.95-.27-.1-.46-.15-.65.15-.19.29-.75.95-.92 1.14-.17.19-.34.22-.63.07-.29-.15-1.2-.44-2.29-1.42-.85-.76-1.42-1.69-1.59-1.98-.17-.29-.02-.45.13-.6.13-.13.29-.34.44-.51.15-.17.19-.29.29-.48.1-.19.05-.36-.02-.51-.07-.15-.65-1.56-.89-2.14-.23-.56-.47-.48-.65-.49h-.55c-.19 0-.49.07-.75.36-.26.29-.98.96-.98 2.35s1 2.73 1.14 2.92c.14.19 1.97 3.01 4.77 4.22.67.29 1.2.46 1.61.59.68.22 1.3.19 1.79.12.55-.08 1.72-.7 1.96-1.38.24-.68.24-1.26.17-1.38-.07-.12-.26-.19-.55-.34Z" fill="currentColor" /></svg>
       </a>

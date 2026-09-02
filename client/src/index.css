@@ -433,3 +433,14 @@ a { color: inherit; text-decoration: none; }
   .whatsapp-fab { right: 16px; bottom: 16px; width: 52px; height: 52px; }
 }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; } }
+
+/* Identidade TOCA DO MACHO */
+:root { --toca-green: #0a7659; --toca-gold: #b58b49; }
+.brand { font-family: "DM Sans", ui-sans-serif, sans-serif; font-size: clamp(17px, 2vw, 23px); font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+.brand-mark { background: var(--toca-green); font-family: "DM Sans", sans-serif; font-size: 15px; font-style: normal; font-weight: 800; }
+.brand-domain { color: var(--toca-gold); }
+.top-strip { background: linear-gradient(90deg, #071f19 0%, #0a7659 50%, #071f19 100%); }
+.promo-banner { background: linear-gradient(100deg, #071f19 0%, #0b5e49 60%, #173f34 100%); }
+.promo-banner h2 strong { color: #a9e1bf; }
+.cta-button, .marketplace-button { background: var(--toca-green); }
+.cta-button:hover, .marketplace-button:hover { background: #075d47; }
