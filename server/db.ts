@@ -1,6 +1,6 @@
-import { eq } from "drizzle-orm";
+import { and, desc, eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
-import { InsertUser, users } from "../drizzle/schema";
+import { InsertOrder, InsertUser, orders, users } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
 let _db: ReturnType<typeof drizzle> | null = null;
@@ -89,4 +89,69 @@ export async function getUserByOpenId(openId: string) {
   return result.length > 0 ? result[0] : undefined;
 }
 
-// TODO: add feature queries here as your schema grows.
+export async function createOrder(order: InsertOrder) {
+  const db = await getDb();
+  if (!db) throw new Error("Banco de dados indisponível");
+  await db.insert(orders).values(order);
+  const [created] = await db.select().from(orders).where(eq(orders.orderNumber, order.orderNumber)).limit(1);
+  if (!created) throw new Error("Não foi possível registrar o pedido");
+  return created;
+}
+
+export async function attachPaymentToOrder(orderNumber: string, paymentId: string) {
+  const db = await getDb();
+  if (!db) throw new Error("Banco de dados indisponível");
+  await db.update(orders).set({ paymentId, status: "awaiting_payment" }).where(eq(orders.orderNumber, orderNumber));
+}
+
+export async function updateOrderPaymentStatus(externalReference: string, status: InsertOrder["status"], paymentId?: string) {
+  const db = await getDb();
+  if (!db) throw new Error("Banco de dados indisponível");
+  await db.update(orders).set({ status, ...(paymentId ? { paymentId } : {}) }).where(eq(orders.externalReference, externalReference));
+}
+
+export async function getOrderStatus(orderNumber: string, email: string) {
+  const db = await getDb();
+  if (!db) throw new Error("Banco de dados indisponível");
+  const [order] = await db.select({
+    orderNumber: orders.orderNumber,
+    status: orders.status,
+    productTitle: orders.productTitle,
+    totalCents: orders.totalCents,
+    createdAt: orders.createdAt,
+  }).from(orders).where(and(eq(orders.orderNumber, orderNumber), eq(orders.customerEmail, email))).limit(1);
+  return order ?? null;
+}
+
+export async function getOrderByExternalReference(externalReference: string) {
+  const db = await getDb();
+  if (!db) throw new Error("Banco de dados indisponível");
+  const [order] = await db.select().from(orders).where(eq(orders.externalReference, externalReference)).limit(1);
+  return order ?? null;
+}
+
+export async function listOrders(limit = 100) {
+  const db = await getDb();
+  if (!db) throw new Error("Banco de dados indisponível");
+  return db.select().from(orders).orderBy(desc(orders.createdAt)).limit(Math.max(1, Math.min(limit, 200)));
+}
+
+export async function updateOrderFulfillment(input: {
+  orderNumber: string;
+  status: "paid" | "processing" | "shipped" | "delivered" | "canceled" | "refunded";
+  supplierOrderReference?: string | null;
+  trackingCode?: string | null;
+  trackingUrl?: string | null;
+}) {
+  const db = await getDb();
+  if (!db) throw new Error("Banco de dados indisponível");
+  await db.update(orders).set({
+    status: input.status,
+    supplierOrderReference: input.supplierOrderReference || null,
+    trackingCode: input.trackingCode || null,
+    trackingUrl: input.trackingUrl || null,
+  }).where(eq(orders.orderNumber, input.orderNumber));
+  const [updated] = await db.select().from(orders).where(eq(orders.orderNumber, input.orderNumber)).limit(1);
+  if (!updated) throw new Error("Pedido não encontrado");
+  return updated;
+}

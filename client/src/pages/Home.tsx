@@ -103,25 +103,19 @@ export default function Home() {
   const [cartCount, setCartCount] = useState(0);
   const [search, setSearch] = useState("");
   const [promoOpen, setPromoOpen] = useState(false);
-  const [promoEmail, setPromoEmail] = useState("");
-  const [promoEmailConfirmation, setPromoEmailConfirmation] = useState("");
-  const [pixPayment, setPixPayment] = useState<{ paymentId: number; status: string; qrCodeBase64: string; qrCode: string; ticketUrl: string | null } | null>(null);
-  const checkoutMutation = trpc.payments.createCheckout.useMutation();
-  const pixPaymentMutation = trpc.payments.createPromotionalPixPayment.useMutation();
+  const [directOrder, setDirectOrder] = useState({ name: "", email: "", emailConfirmation: "", phone: "", postalCode: "", street: "", addressNumber: "", complement: "", neighborhood: "", city: "", state: "", consentTerms: false, consentPrivacy: false });
+  const [pixPayment, setPixPayment] = useState<{ paymentId: string; status: string; qrCodeBase64: string; qrCode: string; ticketUrl: string | null; expiresAt: string | null; orderNumber: string; totalCents: number } | null>(null);
+  const { data: directSalesStatus } = trpc.payments.directSalesStatus.useQuery();
+  const pixPaymentMutation = trpc.payments.createDirectOrderPix.useMutation();
 
   const activePhoto = useMemo(() => gallery[activeImage], [activeImage]);
 
-  const handleAddToCart = async () => {
-    setCartCount((count) => count + 1);
-    try {
-      const checkout = await checkoutMutation.mutateAsync({ quantity: 1 });
-      window.location.assign(checkout.checkoutUrl);
-    } catch {
-      toast.error("Não foi possível abrir o Mercado Pago", {
-        description: "Tente novamente em alguns instantes ou fale com nosso atendimento.",
-        duration: 3600,
-      });
+  const handleAddToCart = () => {
+    if (!directSalesStatus?.enabled) {
+      toast.info("Checkout Pix em homologação", { description: "A compra pelo Mercado Livre continua disponível nos produtos com link comissionado.", duration: 3600 });
+      return;
     }
+    setPromoOpen(true);
   };
 
   const handleRelatedSearch = (value: string) => {
@@ -130,17 +124,28 @@ export default function Home() {
   };
 
   const handlePromotionalCheckout = async () => {
-    const email = promoEmail.trim().toLowerCase();
-    const confirmation = promoEmailConfirmation.trim().toLowerCase();
+    const email = directOrder.email.trim().toLowerCase();
+    const confirmation = directOrder.emailConfirmation.trim().toLowerCase();
     if (!email || email !== confirmation) {
       toast.error("Confirme o mesmo e-mail nos dois campos", { duration: 3000 });
       return;
     }
+    if (!directOrder.consentTerms || !directOrder.consentPrivacy) {
+      toast.error("Aceite os termos de venda e a política de privacidade", { duration: 3000 });
+      return;
+    }
     try {
-      const payment = await pixPaymentMutation.mutateAsync({ email });
+      const payment = await pixPaymentMutation.mutateAsync({
+        ...directOrder,
+        email,
+        emailConfirmation: confirmation,
+        state: directOrder.state.trim().toUpperCase(),
+        consentTerms: true,
+        consentPrivacy: true,
+      });
       setPixPayment(payment);
     } catch {
-      toast.error("Não foi possível gerar o QR Code Pix", { description: "Tente novamente em alguns instantes.", duration: 3200 });
+      toast.error("Não foi possível criar o pedido", { description: "Revise os dados de entrega e tente novamente.", duration: 3200 });
     }
   };
 
@@ -260,10 +265,10 @@ export default function Home() {
         <section className="promo-banner mb-8" aria-label="Oferta promocional Pix">
           <div className="promo-copy">
             <div className="promo-kicker"><span className="promo-live-dot" /> Oferta exclusiva · tempo limitado</div>
-            <h2>Seu novo visual por <strong>R$ 499,00 no Pix</strong></h2>
-            <p>Condição especial para a primeira compra. Pagamento processado com segurança pelo Mercado Pago.</p>
+            <h2>Seu novo visual por <strong>R$ 1.125,00 no Pix</strong></h2>
+            <p>10% de desconto na venda direta. Pedido, atendimento e entrega sob responsabilidade da EliteCapilar.com.br.</p>
           </div>
-          <button onClick={() => setPromoOpen(true)} className="promo-button">Garantir oferta <ArrowRight size={16} /></button>
+          <button onClick={handleAddToCart} className="promo-button">{directSalesStatus?.enabled ? "Garantir oferta" : "Em homologação"} <ArrowRight size={16} /></button>
         </section>
 
         <div className="mb-7 max-w-4xl animate-fade-up lg:hidden">
@@ -385,32 +390,31 @@ export default function Home() {
 
               <div className="purchase-divider" />
 
-              <p className="price-kicker">Preço com produto</p>
+              <p className="price-kicker">Preço de referência <span className="line-through">R$ 1.250,00</span></p>
               <div className="mt-2 flex items-baseline gap-3">
-                <p className="price">R$ 1.250,00</p>
+                <p className="price">R$ 1.125,00</p>
                 <span className="price-tag">-10%</span>
               </div>
-              <p className="installment">12x <strong>R$ 125,00</strong> sem juros</p>
+              <p className="installment"><strong>Pagamento à vista via Pix</strong></p>
 
               <div className="installment-select">
-                <span>12x R$ 125,00 sem juros</span>
-                <ChevronDown size={16} />
+                <span>Venda direta pela EliteCapilar.com.br</span>
+                <ShieldCheck size={16} />
               </div>
 
               <div className="shipping-note"><span className="truck-icon"><Truck size={18} strokeWidth={1.7} /></span><span><strong>Frete Grátis</strong><br />para todo o Brasil</span><span className="shipping-check"><Check size={13} strokeWidth={3} /></span></div>
 
-              <button onClick={handleAddToCart} disabled={checkoutMutation.isPending} className="cta-button">{checkoutMutation.isPending ? "Abrindo Mercado Pago..." : "Pagar com Mercado Pago"} <ArrowRight size={18} /></button>
-              <p className="cta-caption">Pagamento protegido · envio discreto</p>
+              <button onClick={handleAddToCart} className="cta-button">{directSalesStatus?.enabled ? "Comprar no Pix por R$ 1.125" : "Compra Pix em homologação"} <ArrowRight size={18} /></button>
+              <p className="cta-caption">Pedido próprio · Mercado Pago · envio discreto</p>
 
               <div className="payment-methods">
-                <span className="payment-methods-label">Você pode pagar com</span>
+                <span className="payment-methods-label">Pagamento desta oferta</span>
                 <span className="payment-chip pix-chip"><span className="pix-symbol">◆</span> Pix</span>
-                <span className="payment-chip card-chip"><span className="card-symbol" /> Cartão</span>
               </div>
 
               <div className="security-grid">
                 <div className="security-tile"><ShieldCheck size={19} /><span><strong>Compra segura</strong><small>Ambiente protegido</small></span></div>
-                <div className="security-tile"><span className="lock-seal">✓</span><span><strong>Garantia Elite</strong><small>7 dias para trocar</small></span></div>
+                <div className="security-tile"><span className="lock-seal">✓</span><span><strong>Compra online</strong><small>7 dias para arrependimento</small></span></div>
               </div>
             </div>
 
@@ -501,28 +505,42 @@ export default function Home() {
         <div className="promo-modal-backdrop" role="presentation" onMouseDown={(event) => event.target === event.currentTarget && setPromoOpen(false)}>
           <section className="promo-modal" role="dialog" aria-modal="true" aria-labelledby="promo-title">
             <button className="promo-modal-close" onClick={() => setPromoOpen(false)} aria-label="Fechar oferta"><X size={18} /></button>
-            <p className="eyebrow mb-2">Oferta Pix · Mercado Pago</p>
+            <p className="eyebrow mb-2">Venda direta · Pix Mercado Pago</p>
             {pixPayment ? (
               <>
-                <h2 id="promo-title" className="font-serif text-[30px] leading-none tracking-[-.03em]">Pix gerado</h2>
-                <p className="mt-3 text-[13px] leading-[1.65] text-[#756e64]">Escaneie o QR Code no app do seu banco ou copie o código abaixo. A confirmação aparecerá após o Mercado Pago processar o pagamento.</p>
-                <div className="pix-qr-wrap"><img src={`data:image/png;base64,${pixPayment.qrCodeBase64}`} alt="QR Code para pagamento Pix de R$ 499,00" /></div>
+                <h2 id="promo-title" className="font-serif text-[30px] leading-none tracking-[-.03em]">Pedido {pixPayment.orderNumber}</h2>
+                <p className="mt-3 text-[13px] leading-[1.65] text-[#756e64]">Escaneie o QR Code no app do seu banco ou copie o código. O pedido será processado depois que o Mercado Pago confirmar o pagamento.</p>
+                <div className="pix-qr-wrap"><img src={`data:image/png;base64,${pixPayment.qrCodeBase64}`} alt="QR Code para pagamento Pix de R$ 1.125,00" /></div>
                 <div className="pix-code-box"><span>{pixPayment.qrCode}</span><button onClick={handleCopyPix} className="pix-copy-button" aria-label="Copiar código Pix"><Copy size={15} /> Copiar</button></div>
-                <div className="promo-modal-summary"><span>Oferta promocional Pix</span><strong>R$ 499,00</strong></div>
+                <div className="promo-modal-summary"><span>Total do pedido · 10% de desconto</span><strong>R$ 1.125,00</strong></div>
                 {pixPayment.ticketUrl && <a className="pix-open-link" href={pixPayment.ticketUrl} target="_blank" rel="noreferrer">Abrir instruções de pagamento <ArrowRight size={15} /></a>}
-                <p className="promo-modal-footnote"><ShieldCheck size={14} /> Pagamento confirmado pelo webhook do Mercado Pago</p>
+                <p className="promo-modal-footnote"><ShieldCheck size={14} /> Guarde o número do pedido. O status é confirmado pelo Mercado Pago.</p>
               </>
             ) : (
               <>
-                <h2 id="promo-title" className="font-serif text-[30px] leading-none tracking-[-.03em]">Confirme seu e-mail</h2>
-                <p className="mt-3 text-[13px] leading-[1.65] text-[#756e64]">Vamos usar este e-mail para identificar seu pedido no Mercado Pago. Digite-o duas vezes para confirmar antes de continuar.</p>
-                <div className="mt-6 grid gap-3">
-                  <label className="promo-field"><span>Seu e-mail</span><input type="email" value={promoEmail} onChange={(event) => setPromoEmail(event.target.value)} placeholder="voce@exemplo.com" autoFocus /></label>
-                  <label className="promo-field"><span>Confirme seu e-mail</span><input type="email" value={promoEmailConfirmation} onChange={(event) => setPromoEmailConfirmation(event.target.value)} placeholder="Digite novamente" onKeyDown={(event) => event.key === "Enter" && handlePromotionalCheckout()} /></label>
+                <h2 id="promo-title" className="font-serif text-[30px] leading-none tracking-[-.03em]">Entrega e pagamento</h2>
+                <p className="mt-3 text-[13px] leading-[1.65] text-[#756e64]">A EliteCapilar.com.br será a vendedora responsável. Preencha os dados necessários para entrega e confirme o Pix no seu banco.</p>
+                {directSalesStatus?.seller && <div className="direct-seller-card"><span><small>Vendedor</small><strong>{directSalesStatus.seller.legalName}</strong></span><span><small>CPF/CNPJ</small><strong>{directSalesStatus.seller.taxId}</strong></span><span><small>Prazo estimado</small><strong>{directSalesStatus.seller.shippingEstimate}</strong></span><span><small>Suporte</small><strong>{directSalesStatus.seller.supportEmail}</strong></span></div>}
+                <div className="direct-checkout-grid mt-6">
+                  <label className="promo-field direct-full"><span>Nome completo</span><input autoComplete="name" value={directOrder.name} onChange={(event) => setDirectOrder({ ...directOrder, name: event.target.value })} placeholder="Nome do destinatário" autoFocus /></label>
+                  <label className="promo-field"><span>Seu e-mail</span><input type="email" autoComplete="email" value={directOrder.email} onChange={(event) => setDirectOrder({ ...directOrder, email: event.target.value })} placeholder="voce@exemplo.com" /></label>
+                  <label className="promo-field"><span>Confirme seu e-mail</span><input type="email" value={directOrder.emailConfirmation} onChange={(event) => setDirectOrder({ ...directOrder, emailConfirmation: event.target.value })} placeholder="Digite novamente" /></label>
+                  <label className="promo-field"><span>Telefone</span><input type="tel" autoComplete="tel" value={directOrder.phone} onChange={(event) => setDirectOrder({ ...directOrder, phone: event.target.value })} placeholder="(11) 99999-9999" /></label>
+                  <label className="promo-field"><span>CEP</span><input inputMode="numeric" autoComplete="postal-code" value={directOrder.postalCode} onChange={(event) => setDirectOrder({ ...directOrder, postalCode: event.target.value })} placeholder="00000-000" /></label>
+                  <label className="promo-field direct-full"><span>Endereço</span><input autoComplete="address-line1" value={directOrder.street} onChange={(event) => setDirectOrder({ ...directOrder, street: event.target.value })} placeholder="Rua ou avenida" /></label>
+                  <label className="promo-field"><span>Número</span><input value={directOrder.addressNumber} onChange={(event) => setDirectOrder({ ...directOrder, addressNumber: event.target.value })} placeholder="123" /></label>
+                  <label className="promo-field"><span>Complemento</span><input autoComplete="address-line2" value={directOrder.complement} onChange={(event) => setDirectOrder({ ...directOrder, complement: event.target.value })} placeholder="Apto. 10 (opcional)" /></label>
+                  <label className="promo-field"><span>Bairro</span><input value={directOrder.neighborhood} onChange={(event) => setDirectOrder({ ...directOrder, neighborhood: event.target.value })} placeholder="Bairro" /></label>
+                  <label className="promo-field"><span>Cidade</span><input autoComplete="address-level2" value={directOrder.city} onChange={(event) => setDirectOrder({ ...directOrder, city: event.target.value })} placeholder="Cidade" /></label>
+                  <label className="promo-field"><span>UF</span><input autoComplete="address-level1" maxLength={2} value={directOrder.state} onChange={(event) => setDirectOrder({ ...directOrder, state: event.target.value.toUpperCase() })} placeholder="SP" /></label>
                 </div>
-                <div className="promo-modal-summary"><span>Oferta promocional Pix</span><strong>R$ 499,00</strong></div>
-                <button onClick={handlePromotionalCheckout} disabled={pixPaymentMutation.isPending} className="cta-button mt-5">{pixPaymentMutation.isPending ? "Gerando QR Code..." : "Gerar QR Code Pix"}<ArrowRight size={17} /></button>
-                <p className="promo-modal-footnote"><ShieldCheck size={14} /> Você confirmará o pagamento no seu banco</p>
+                <div className="direct-consents">
+                  <label><input type="checkbox" checked={directOrder.consentTerms} onChange={(event) => setDirectOrder({ ...directOrder, consentTerms: event.target.checked })} /><span>Li e aceito os <a href="/termos-de-venda.html" target="_blank">Termos de Venda</a>, incluindo entrega, troca, arrependimento e garantia.</span></label>
+                  <label><input type="checkbox" checked={directOrder.consentPrivacy} onChange={(event) => setDirectOrder({ ...directOrder, consentPrivacy: event.target.checked })} /><span>Autorizo o uso dos dados para pagamento, atendimento e entrega, conforme a <a href="/politica-de-privacidade.html" target="_blank">Política de Privacidade</a>.</span></label>
+                </div>
+                <div className="promo-modal-summary"><span>De R$ 1.250,00 · desconto Pix de 10%</span><strong>R$ 1.125,00</strong></div>
+                <button onClick={handlePromotionalCheckout} disabled={pixPaymentMutation.isPending} className="cta-button mt-5">{pixPaymentMutation.isPending ? "Criando pedido..." : "Criar pedido e gerar Pix"}<ArrowRight size={17} /></button>
+                <p className="promo-modal-footnote"><ShieldCheck size={14} /> Pagamento seguro. Seus dados não são vendidos nem usados em links de afiliado.</p>
               </>
             )}
           </section>

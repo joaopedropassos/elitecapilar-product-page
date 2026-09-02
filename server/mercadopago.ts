@@ -1,5 +1,7 @@
 import type { Express } from "express";
 import { ENV } from "./_core/env";
+import { notifyOwner } from "./_core/notification";
+import { getOrderByExternalReference, updateOrderPaymentStatus } from "./db";
 
 const MERCADO_PAGO_API = "https://api.mercadopago.com";
 
@@ -9,6 +11,8 @@ export const PRODUCT = {
   unitPrice: 1250,
   currencyId: "BRL",
 };
+
+export const DIRECT_PIX_PRICE = 1125;
 
 function mercadoPagoHeaders() {
   if (!ENV.mercadoPagoAccessToken) {
@@ -199,14 +203,67 @@ export async function createPromotionalPixPayment(email: string) {
   };
 }
 
+export async function createDirectSalePixPayment(input: { email: string; externalReference: string; orderNumber: string }) {
+  const response = await mercadoPagoFetch(`${MERCADO_PAGO_API}/v1/payments`, {
+    method: "POST",
+    headers: {
+      ...mercadoPagoHeaders(),
+      "X-Idempotency-Key": input.externalReference,
+    },
+    body: JSON.stringify({
+      transaction_amount: DIRECT_PIX_PRICE,
+      description: `${PRODUCT.title} · Venda direta Pix`,
+      payment_method_id: "pix",
+      payer: { email: input.email },
+      notification_url: `${ENV.publicSiteUrl}/api/mercadopago/webhook`,
+      external_reference: input.externalReference,
+      metadata: { order_number: input.orderNumber, sale_model: "direct_resale" },
+    }),
+  });
+
+  if (!response.ok) {
+    const errorBody = await response.text();
+    console.error("[Mercado Pago] Direct sale Pix payment failed", response.status, errorBody.slice(0, 500));
+    throw new Error("Não foi possível gerar o Pix do pedido");
+  }
+
+  const payment = await response.json() as {
+    id?: number;
+    status?: string;
+    date_of_expiration?: string;
+    point_of_interaction?: { transaction_data?: { qr_code_base64?: string; qr_code?: string; ticket_url?: string } };
+  };
+  const transactionData = payment.point_of_interaction?.transaction_data;
+  if (!payment.id || !transactionData?.qr_code_base64 || !transactionData.qr_code) {
+    throw new Error("O Mercado Pago não retornou os dados do Pix");
+  }
+
+  return {
+    paymentId: String(payment.id),
+    status: payment.status ?? "pending",
+    qrCodeBase64: transactionData.qr_code_base64,
+    qrCode: transactionData.qr_code,
+    ticketUrl: transactionData.ticket_url ?? null,
+    expiresAt: payment.date_of_expiration ?? null,
+  };
+}
+
+function orderStatusForPayment(status?: string) {
+  if (status === "approved") return "paid" as const;
+  if (status === "refunded" || status === "charged_back") return "refunded" as const;
+  if (status === "cancelled") return "canceled" as const;
+  if (status === "rejected") return "payment_failed" as const;
+  return "awaiting_payment" as const;
+}
+
 export function registerMercadoPagoWebhook(app: Express) {
   app.post("/api/mercadopago/webhook", async (req, res) => {
-    // Acknowledge immediately so Mercado Pago does not retry while we inspect the event.
-    res.status(200).json({ received: true });
-
     const type = req.body?.type;
     const paymentId = req.body?.data?.id ?? req.body?.id;
-    if (type !== "payment" || !paymentId || !ENV.mercadoPagoAccessToken) return;
+    if (type !== "payment" || !paymentId || !ENV.mercadoPagoAccessToken) {
+      res.status(200).json({ received: true, ignored: true });
+      return;
+    }
 
     try {
       const response = await mercadoPagoFetch(`${MERCADO_PAGO_API}/v1/payments/${encodeURIComponent(String(paymentId))}`, {
@@ -217,13 +274,38 @@ export function registerMercadoPagoWebhook(app: Express) {
         return;
       }
       const payment = await response.json() as { id?: number; status?: string; external_reference?: string };
+      if (payment.external_reference?.startsWith("EC-")) {
+        const previousOrder = await getOrderByExternalReference(payment.external_reference);
+        const nextStatus = orderStatusForPayment(payment.status);
+        await updateOrderPaymentStatus(payment.external_reference, nextStatus, payment.id ? String(payment.id) : undefined);
+        if (nextStatus === "paid" && previousOrder && previousOrder.status !== "paid") {
+          try {
+            await notifyOwner({
+              title: `Pix aprovado · Pedido ${previousOrder.orderNumber}`,
+              content: [
+                `Produto: ${previousOrder.productTitle}`,
+                `Total: R$ ${(previousOrder.totalCents / 100).toFixed(2).replace(".", ",")}`,
+                `Cliente: ${previousOrder.customerName}`,
+                `E-mail: ${previousOrder.customerEmail}`,
+                `Telefone: ${previousOrder.customerPhone}`,
+                `Entrega: ${previousOrder.street}, ${previousOrder.addressNumber}${previousOrder.complement ? `, ${previousOrder.complement}` : ""} · ${previousOrder.neighborhood} · ${previousOrder.city}/${previousOrder.state} · CEP ${previousOrder.postalCode}`,
+                "Ação: confirmar disponibilidade, comprar do fornecedor sem link próprio de afiliado e registrar o envio.",
+              ].join("\n"),
+            });
+          } catch (notificationError) {
+            console.warn("[Orders] Owner notification unavailable", notificationError instanceof Error ? notificationError.message : "unknown_error");
+          }
+        }
+      }
       console.log("[Mercado Pago] Payment update", {
         id: payment.id,
         status: payment.status,
         externalReference: payment.external_reference,
       });
+      res.status(200).json({ received: true });
     } catch (error) {
       console.error("[Mercado Pago] Webhook processing failed", error);
+      res.status(500).json({ received: false });
     }
   });
 }
