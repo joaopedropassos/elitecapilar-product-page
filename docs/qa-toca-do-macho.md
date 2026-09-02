@@ -29,3 +29,7 @@ O mascote foi inserido no topo da página inicial com movimento vertical discret
 ## Frete por CEP antes do Pix
 
 Foi adicionada uma cotação regional por CEP antes da cobrança. O checkout consulta o frete, mostra valor, região e prazo no modal e só permite gerar o Pix quando a cotação estiver disponível. O backend recalcula o frete a partir do CEP recebido, sem confiar no valor enviado pelo navegador; o total é o preço cheio com 10% de desconto mais o frete. Para o CEP 01001-000, o smoke test confirmou preço Pix de R$ 80,91, frete de R$ 19,90 e total de R$ 100,81, com QR Code e código copia e cola.
+
+## Ajuste de chamadas para pagamento
+
+A home passou a apresentar o CTA secundário **“Parcelar via Mercado Pago”** nos cards. O texto “alternativa comissionada” foi removido dos selos abaixo de cada produto. O bloco explicativo `Como funciona` foi retirado da área principal e o acesso ao catálogo ampliado foi movido para o final da página com fonte de 9 px. A revisão móvel em 390 × 1200 confirmou que o CTA permanece legível e o link está posicionado abaixo da grade.
