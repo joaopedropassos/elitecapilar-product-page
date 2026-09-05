@@ -8,8 +8,8 @@ const links = [...affiliateBlock.matchAll(/'([^']+)':'(https:\/\/meli\.la\/[A-Za
 const imageCount = (html.match(/image:'\/manus-storage\//g) || []).length;
 const invalidPromises = ["Comprar com Desconto + Cashback", "Buscando o melhor preço com Cashback Méliuz"].filter((text) => html.includes(text));
 const failures = [];
-if (sourceProductCount !== 124) failures.push(`esperados 124 produtos editoriais na fonte, encontrados ${sourceProductCount}`);
-if (links.length !== 35) failures.push(`esperados 35 links, encontrados ${links.length}`);
+if (sourceProductCount !== 135) failures.push(`esperados 135 produtos editoriais na fonte, encontrados ${sourceProductCount}`);
+if (links.length !== 46) failures.push(`esperados 46 links, encontrados ${links.length}`);
 if (new Set(links.map((item) => item.id)).size !== links.length) failures.push("IDs de afiliado duplicados");
 if (new Set(links.map((item) => item.url)).size !== links.length) failures.push("URLs de afiliado duplicadas");
 if (imageCount !== 33) failures.push(`esperadas 33 imagens reais, encontradas ${imageCount}`);
@@ -20,4 +20,4 @@ if (failures.length) {
   console.error(JSON.stringify({ ok: false, failures }, null, 2));
   process.exit(1);
 }
-console.log(JSON.stringify({ ok: true, sourceProductCount, renderedLinkedProducts: 35, affiliateLinks: links.length, realImages: imageCount }, null, 2));
+console.log(JSON.stringify({ ok: true, sourceProductCount, renderedLinkedProducts: 46, affiliateLinks: links.length, realImages: imageCount }, null, 2));
