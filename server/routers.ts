@@ -29,7 +29,7 @@ const directOrderInput = z.object({
 });
 
 const catalogPixOrderInput = directOrderInput.safeExtend({
-  productId: z.enum(["barba-01", "perfume-01", "roupa-01", "game-01"]),
+  productId: z.enum(["barba-01", "barba-02", "perfume-01", "perfume-02", "perfume-03", "perfume-04", "perfume-05", "perfume-06", "perfume-07", "perfume-08", "perfume-09", "roupa-01", "game-01", "ferramenta-01", "game-02", "game-03", "game-04", "tech-01", "acessorio-01", "tech-02", "casa-01", "suplemento-01", "suplemento-02", "impressora-01", "impressora-02", "game-05", "notebook-01", "kindle-01", "kindle-02", "casa-02", "relogio-01", "relogio-02", "relogio-03", "relogio-04", "relogio-05"]),
 });
 
 export const appRouter = router({
