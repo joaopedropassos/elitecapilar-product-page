@@ -28,7 +28,7 @@ export const CATALOG_PRODUCTS = {
   "perfume-09": { title: "Ralph Lauren Polo Sport EDT Masculino 100 ml", fullPriceCents: 23692 },
   "roupa-01": { title: "Kit 3 Camisetas Masculinas 100% Algodão Premium", fullPriceCents: 6799 },
   "game-01": { title: "Console PlayStation 5 Slim Edição Digital", fullPriceCents: 449000 },
-  "ferramenta-01": { title: "PlayStation Store Gift Card Digital", fullPriceCents: 36000 },
+  "ferramenta-01": { title: "Simake Parafusadeira Furadeira com 2 Baterias e Maleta", fullPriceCents: 36000 },
   "game-02": { title: "Sony PlayStation Store Gift Card R$ 450 Digital", fullPriceCents: 36000 },
   "game-03": { title: "Sony Controle DualSense sem Fio White para PS5", fullPriceCents: 39700 },
   "game-04": { title: "Razer Gold Digital R$ 500", fullPriceCents: 50000 },
