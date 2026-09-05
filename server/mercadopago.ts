@@ -15,10 +15,41 @@ export const PRODUCT = {
 export const DIRECT_PIX_PRICE = 1125;
 
 export const CATALOG_PRODUCTS = {
-  "barba-01": { title: "Máquina Profissional Wahl Magic Clip Black Sem Fio", fullPriceCents: 61000 },
-  "perfume-01": { title: "Perfume de Feromônios Dominus Men 50 ml", fullPriceCents: 8990 },
+  "barba-01": { title: "ML Máquina Profissional sem Fio com Visor LED e Lâmina de Titânio", fullPriceCents: 8100 },
+  "barba-02": { title: "ML Máquina Profissional sem Fio com Visor LED e Regulagem", fullPriceCents: 8100 },
+  "perfume-01": { title: "Dominus Men Perfume de Feromônios 50 ml", fullPriceCents: 9500 },
+  "perfume-02": { title: "Primacial Kit 3 Body Splash Masculino Vibration, Blunn e Infalível", fullPriceCents: 8866 },
+  "perfume-03": { title: "EZ Black Eau de Parfum Masculino 100 ml", fullPriceCents: 6890 },
+  "perfume-04": { title: "Lattafa Asad Tradicional Masculino 100 ml", fullPriceCents: 15500 },
+  "perfume-05": { title: "Paris Elysees Vodka Wild Masculino Intense 100 ml", fullPriceCents: 6790 },
+  "perfume-06": { title: "Emporio Armani Stronger With You EDT 100 ml", fullPriceCents: 44999 },
+  "perfume-07": { title: "Azzaro The Most Wanted Intense EDP 100 ml", fullPriceCents: 45557 },
+  "perfume-08": { title: "Armaf Club de Nuit Intense Man EDT 105 ml", fullPriceCents: 21505 },
+  "perfume-09": { title: "Ralph Lauren Polo Sport EDT Masculino 100 ml", fullPriceCents: 23692 },
   "roupa-01": { title: "Kit 3 Camisetas Masculinas 100% Algodão Premium", fullPriceCents: 6799 },
   "game-01": { title: "Console PlayStation 5 Slim Edição Digital", fullPriceCents: 449000 },
+  "ferramenta-01": { title: "PlayStation Store Gift Card Digital", fullPriceCents: 36000 },
+  "game-02": { title: "Sony PlayStation Store Gift Card R$ 450 Digital", fullPriceCents: 36000 },
+  "game-03": { title: "Sony Controle DualSense sem Fio White para PS5", fullPriceCents: 39700 },
+  "game-04": { title: "Razer Gold Digital R$ 500", fullPriceCents: 50000 },
+  "tech-01": { title: "Samsung Galaxy A57 12 GB 512 GB Awesome Navy", fullPriceCents: 454900 },
+  "acessorio-01": { title: "Mixs Capacete Robocop Escamoteável Gladiator", fullPriceCents: 31100 },
+  "tech-02": { title: "Baseus Carregador portátil MagSafe 5000 mAh 20 W", fullPriceCents: 24990 },
+  "casa-01": { title: "Alphs Percarbonato de Sódio 100% Tira Manchas Calisul", fullPriceCents: 2131 },
+  "suplemento-01": { title: "Soldiers Nutrition Creatina Monohidratada em Pó 100% Pura 500 g", fullPriceCents: 4419 },
+  "suplemento-02": { title: "Black Skull Whey 100% HD Caramelo Macchiato 900 g", fullPriceCents: 10400 },
+  "impressora-01": { title: "Bambu Lab A1 Mini 3D Cinza", fullPriceCents: 192000 },
+  "impressora-02": { title: "Bambu Lab P1S Combo com AMS", fullPriceCents: 750400 },
+  "game-05": { title: "Square Enix Final Fantasy VII Rebirth para PlayStation 5", fullPriceCents: 24613 },
+  "notebook-01": { title: "Acer Aspire 5 Ryzen 5 16 GB 512 GB SSD", fullPriceCents: 412200 },
+  "kindle-01": { title: "Amazon Capa Folio Premium Magnética para Kindle Scribe", fullPriceCents: 101700 },
+  "kindle-02": { title: "Amazon Kindle Colorsoft 2024 32 GB Signature Edition", fullPriceCents: 165900 },
+  "casa-02": { title: "QW-W Garrafa de Vidro 1 Litro", fullPriceCents: 3504 },
+  "relogio-01": { title: "Poedagar Oldmoney Aço Inox Prata Social Luxo Premium", fullPriceCents: 11999 },
+  "relogio-02": { title: "Saint Germain Chroma Masculino Preto Clássico 42 mm", fullPriceCents: 13540 },
+  "relogio-03": { title: "Casio G-Shock GA-2100-1ADR Carbon Core Guard", fullPriceCents: 39981 },
+  "relogio-04": { title: "Casio G-Shock DW-5600BB-1DR Digital Preto", fullPriceCents: 28211 },
+  "relogio-05": { title: "OPK 6045 Quartz Masculino Preto", fullPriceCents: 2803 }
 } as const;
 
 export type CatalogProductId = keyof typeof CATALOG_PRODUCTS;
