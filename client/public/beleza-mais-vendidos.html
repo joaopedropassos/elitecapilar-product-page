@@ -40,7 +40,7 @@
           <p class="mt-6 max-w-2xl text-sm leading-7 text-white/65">Ofertas masculinas selecionadas para facilitar sua escolha. Preços, disponibilidade e condições são confirmados no anúncio do Mercado Livre.</p>
         </div>
           <div class="grid grid-cols-2 gap-3 self-end">
-          <div class="rounded-2xl border border-white/10 bg-white/[.06] p-5"><strong class="font-display text-3xl text-[#dfc38c]">51</strong><span class="mt-1 block text-xs text-white/55">ofertas com link</span></div>
+          <div class="rounded-2xl border border-white/10 bg-white/[.06] p-5"><strong class="font-display text-3xl text-[#dfc38c]">55</strong><span class="mt-1 block text-xs text-white/55">ofertas com link</span></div>
           <div class="rounded-2xl border border-white/10 bg-white/[.06] p-5"><strong class="font-display text-3xl text-[#dfc38c]">14</strong><span class="mt-1 block text-xs text-white/55">categorias ativas</span></div>
         </div>
       </div>
@@ -59,7 +59,7 @@
         
       </div>
 
-      <div class="mb-5 flex items-center justify-between gap-4 text-xs text-black/50"><p id="resultCount" aria-live="polite">51 ofertas com link encontradas</p><p class="hidden sm:block">51 ofertas ativas · somente links liberados</p></div>
+      <div class="mb-5 flex items-center justify-between gap-4 text-xs text-black/50"><p id="resultCount" aria-live="polite">55 ofertas com link encontradas</p><p class="hidden sm:block">55 ofertas ativas · somente links liberados</p></div>
       <div id="productGrid" class="grid grid-cols-1 gap-4 min-[430px]:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"></div>
       <div id="emptyState" class="hidden rounded-2xl border border-dashed border-black/15 bg-white p-10 text-center"><h3 class="font-display text-2xl">Nenhum produto encontrado</h3><p class="mt-2 text-sm text-black/50">Tente outro termo ou selecione a aba “Todos”.</p></div>
     </section>
@@ -139,7 +139,11 @@
       'tech-tv-lg-01':'https://meli.la/2yopWfw',
       'ferramenta-lavajato-01':'https://meli.la/212XAN8',
       'tech-charger-iphone-01':'https://meli.la/1N4Lw9b',
-      'tech-camera-wifi-01':'https://meli.la/1pHAqav'
+      'tech-camera-wifi-01':'https://meli.la/1pHAqav',
+      'tech-projetor-01':'https://meli.la/1tB67B7',
+      'tech-lapela-01':'https://meli.la/2NwkSsF',
+      'casa-lixeira-01':'https://meli.la/1RuHzNX',
+      'casa-campainha-01':'https://meli.la/1RCGD5X'
     });
 
     const INSTALLMENTS = Object.freeze({
@@ -290,6 +294,10 @@
       {id:'ferramenta-lavajato-01',group:'ferramentas',category:'Ferramentas',brand:'ML',name:'Lavadora Lava-Jato Portátil Pressão 2 Baterias',badge:'Oferta do Dia',search:'https://meli.la/212XAN8'},
       {id:'tech-charger-iphone-01',group:'tecnologia',category:'Tecnologia',brand:'Boyu Cell',name:'Carregador Turbo Compatível iPhone Tipo C',badge:'Oferta do Dia',search:'https://meli.la/1N4Lw9b'},
       {id:'tech-camera-wifi-01',group:'tecnologia',category:'Tecnologia',brand:'ICSEE/Yoosee',name:'Câmera de Segurança Wi-Fi 4K Dupla Lente',badge:'Oferta do Dia',search:'https://meli.la/1pHAqav'},
+      {id:'tech-projetor-01',group:'tecnologia',category:'Tecnologia',brand:'Davely',name:'Mini Projetor HY300 4K Android Wi-Fi/Bluetooth',badge:'Oferta do Dia',search:'https://meli.la/1tB67B7'},
+      {id:'tech-lapela-01',group:'tecnologia',category:'Tecnologia',brand:'Mymotors',name:'Microfone Lapela Sem Fio Tipo C',badge:'Oferta do Dia',search:'https://meli.la/2NwkSsF'},
+      {id:'casa-lixeira-01',group:'casa-lifestyle',category:'Casa & Lifestyle',brand:'Earman',name:'Lixeira Inteligente Automática 16L Sensor',badge:'Oferta do Dia',search:'https://meli.la/1RuHzNX'},
+      {id:'casa-campainha-01',group:'casa-lifestyle',category:'Casa & Lifestyle',brand:'Intelbras',name:'Campainha Sem Fio CIB 101',badge:'Oferta do Dia',search:'https://meli.la/1RCGD5X'},
     ];
 
     const linkedProducts = products.filter(product => Boolean(AFFILIATE_LINKS[product.id]));
