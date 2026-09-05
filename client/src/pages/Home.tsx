@@ -1,10 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
 import { trpc } from "@/lib/trpc";
-import { Copy, CreditCard, ExternalLink, Menu, Search, ShoppingCart, SlidersHorizontal, UserRound, X } from "lucide-react";
+import { Copy, ExternalLink, Menu, Search, ShoppingCart, UserRound, X } from "lucide-react";
 import { toast } from "sonner";
 
 type CatalogProductId = "barba-01" | "perfume-01" | "roupa-01" | "game-01";
 type CatalogProduct = { id: CatalogProductId; category: string; title: string; seller: string; rating: string; sold: string; fullPrice: number; image: string; url: string; badge: string };
+type SortMode = "relevancia" | "preco";
 
 const products: CatalogProduct[] = [
   { id: "barba-01", category: "Barba & Cabelo", title: "Máquina Profissional Wahl Magic Clip Black Sem Fio", seller: "TECLA ONLINE", rating: "4.8", sold: "+5 mil vendidos", fullPrice: 610, image: "/manus-storage/barba-vphz_07e9b633.webp", url: "https://meli.la/2K66kNt", badge: "Mais vendido" },
@@ -17,10 +18,14 @@ const categories = [["Games", "🎮"], ["Roupas", "👕"], ["Barba & Cabelo", "�
 const emptyForm = { name: "", email: "", emailConfirmation: "", phone: "", postalCode: "", street: "", addressNumber: "", complement: "", neighborhood: "", city: "", state: "", consentTerms: false, consentPrivacy: false, website: "" };
 const formatBRL = (cents: number) => (cents / 100).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 
+const mapCategoryChip = (name: string) => (name === "Roupas" ? "Roupas Masculinas" : name);
+
 export default function Home() {
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState("Todos");
+  const [sortMode, setSortMode] = useState<SortMode>("relevancia");
   const [menuOpen, setMenuOpen] = useState(false);
+  const [categoriesOpen, setCategoriesOpen] = useState(false);
   const [pixOpen, setPixOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<CatalogProduct | null>(null);
   const [pixPayment, setPixPayment] = useState<{ paymentId: string; status: string; qrCodeBase64: string; qrCode: string; ticketUrl: string | null; expiresAt: string | null; orderNumber: string; totalCents: number; productTitle: string; fullPriceCents: number } | null>(null);
@@ -31,11 +36,17 @@ export default function Home() {
   const { data: shippingQuote, isFetching: shippingLoading, error: shippingError } = trpc.shipping.quote.useQuery(shippingInput, { enabled: shippingInput.postalCode.length === 8 });
   const pixAvailable = Boolean(directSalesStatus?.enabled);
 
-  const visible = products.filter((product) => {
-    const matchesCategory = category === "Todos" || product.category === category;
-    const matchesQuery = `${product.title} ${product.category} ${product.seller}`.toLowerCase().includes(query.toLowerCase());
-    return matchesCategory && matchesQuery;
-  });
+  const visible = useMemo(() => {
+    const filtered = products.filter((product) => {
+      const matchesCategory = category === "Todos" || product.category === category;
+      const matchesQuery = `${product.title} ${product.category} ${product.seller}`.toLowerCase().includes(query.toLowerCase());
+      return matchesCategory && matchesQuery;
+    });
+    if (sortMode === "preco") {
+      return [...filtered].sort((a, b) => a.fullPrice - b.fullPrice);
+    }
+    return filtered;
+  }, [category, query, sortMode]);
 
   const startPixCheckout = (product: CatalogProduct) => {
     if (!pixAvailable) {
@@ -79,11 +90,27 @@ export default function Home() {
     toast.success("Código Pix copiado");
   };
 
+  const selectCategoryFromMenu = (name: string) => {
+    setCategory(name === "Todos" ? "Todos" : mapCategoryChip(name));
+    setCategoriesOpen(false);
+  };
+
   useEffect(() => { document.title = "TOCA DO MACHO | Ofertas masculinas com desconto"; }, []);
+
+  useEffect(() => {
+    if (!categoriesOpen) return;
+    const onDocClick = (event: MouseEvent) => {
+      const target = event.target as HTMLElement | null;
+      if (target?.closest?.("[data-categories-menu]")) return;
+      setCategoriesOpen(false);
+    };
+    document.addEventListener("mousedown", onDocClick);
+    return () => document.removeEventListener("mousedown", onDocClick);
+  }, [categoriesOpen]);
 
   return (
     <div className="marketplace-home min-h-screen bg-[#f7f9fc] text-[#1f2937]">
-      <div className="marketplace-yellow px-4 py-3 text-center text-[11px] font-extrabold uppercase tracking-[.18em] text-[#111827]">TOCA DO MACHO · TUDO PARA O HOMEM</div>
+      <div className="marketplace-yellow px-4 py-3 text-center text-[11px] font-extrabold uppercase tracking-[.18em] text-[#111827]">Links afiliados · compra no Mercado Livre ou Pix na loja</div>
       <header className="sticky top-0 z-30 border-b border-[#e5e7eb] bg-white shadow-sm">
         <div className="mx-auto flex max-w-[1440px] items-center gap-3 px-4 py-3 sm:px-6">
           <button className="marketplace-icon" onClick={() => setMenuOpen((open) => !open)} aria-label="Abrir menu">{menuOpen ? <X size={22} /> : <Menu size={22} />}</button>
@@ -96,19 +123,139 @@ export default function Home() {
 
       <main>
         <section className="mx-auto max-w-[1440px] px-4 pt-5 sm:px-6">
-          <div className="marketplace-controls flex items-center gap-5 overflow-x-auto whitespace-nowrap border-b border-[#dfe4ea] pb-3 text-sm font-semibold"><button className="text-[#2574d9]">Categorias⌄</button><span className="text-[#9ca3af]">|</span><button>Marca⌄</button><button className="ml-auto flex items-center gap-2 text-[#2574d9]"><SlidersHorizontal size={18} /> Filtros (3)⌄</button></div>
-          <div className="mt-4 flex gap-3 overflow-x-auto pb-2 text-sm"><span className="marketplace-pill">▣ Parcelamento sem juros</span><span className="marketplace-pill">🇧🇷 Envio local</span><span className="marketplace-pill">✈️ Internacional</span></div>
+          <div className="marketplace-controls relative flex items-center gap-5 overflow-visible border-b border-[#dfe4ea] pb-3 text-sm font-semibold">
+            <div className="relative" data-categories-menu>
+              <button
+                type="button"
+                className="text-[#2574d9]"
+                aria-expanded={categoriesOpen}
+                aria-haspopup="listbox"
+                onClick={() => setCategoriesOpen((open) => !open)}
+              >
+                Categorias⌄
+              </button>
+              {categoriesOpen && (
+                <ul className="categories-dropdown absolute left-0 top-full z-20 mt-2 min-w-[220px] rounded-xl border border-[#e5e7eb] bg-white py-2 shadow-lg" role="listbox" aria-label="Categorias">
+                  <li>
+                    <button type="button" className={`categories-dropdown-item ${category === "Todos" ? "is-active" : ""}`} onClick={() => selectCategoryFromMenu("Todos")}>Todos</button>
+                  </li>
+                  {categories.map(([name]) => {
+                    const mapped = mapCategoryChip(name);
+                    return (
+                      <li key={name}>
+                        <button type="button" className={`categories-dropdown-item ${category === mapped ? "is-active" : ""}`} onClick={() => selectCategoryFromMenu(name)}>{name}</button>
+                      </li>
+                    );
+                  })}
+                </ul>
+              )}
+            </div>
+            <span className="text-[#9ca3af]">|</span>
+            <span className="text-[#9ca3af]" title="Em breve">Marca</span>
+          </div>
+          <div className="mt-4 flex gap-3 overflow-x-auto pb-2 text-sm">
+            <span className="marketplace-pill marketplace-pill-static">▣ Parcelamento sem juros</span>
+            <span className="marketplace-pill marketplace-pill-static">🇧🇷 Envio local</span>
+            <span className="marketplace-pill marketplace-pill-static">✈️ Internacional</span>
+          </div>
           <section className="mascot-banner mt-4 overflow-hidden rounded-2xl" aria-label="Mascote da TOCA DO MACHO">
-            <div className="mascot-copy"><p className="text-[11px] font-black uppercase tracking-[.18em] text-[#ffe500]">Bem-vindo à toca</p><h2>Estilo de homem,<br />atitude de macho.</h2><p>Ofertas selecionadas para sua rotina.</p></div>
+            <div className="mascot-copy">
+              <p className="text-[11px] font-black uppercase tracking-[.18em] text-[#ffe500]">Bem-vindo à toca</p>
+              <h2>Estilo de homem,<br />atitude de macho.</h2>
+              <p className="mascot-slogan">Ofertas selecionadas para sua rotina.</p>
+              <p className="mascot-disclosure">Duas formas de compra: Pix com 10% na loja (quando disponível) ou links afiliados no Mercado Livre.</p>
+              <a href="#ofertas" className="mascot-cta">Ver ofertas com 10% no Pix</a>
+            </div>
             <img className="mascot-image" src="/manus-storage/toca-do-macho-mascote_9190a807.png" alt="Mascote da TOCA DO MACHO" />
           </section>
-          <div className="marketplace-category-band mt-5 rounded-2xl px-4 py-5 sm:px-7"><h1 className="text-2xl font-extrabold tracking-tight sm:text-3xl">Qual categoria você procura?</h1><div className="mt-5 flex gap-5 overflow-x-auto pb-2">{categories.map(([name, icon]) => <button key={name} onClick={() => setCategory(name === "Roupas" ? "Roupas Masculinas" : name)} className="category-choice"><span>{icon}</span><strong>{name}</strong></button>)}</div></div>
+          <div id="categorias" className="marketplace-category-band mt-5 scroll-mt-24 rounded-2xl px-4 py-5 sm:px-7">
+            <h1 className="text-2xl font-extrabold tracking-tight sm:text-3xl">Qual categoria você procura?</h1>
+            <div className="mt-5 flex gap-5 overflow-x-auto pb-2">{categories.map(([name, icon]) => <button key={name} onClick={() => setCategory(mapCategoryChip(name))} className="category-choice"><span>{icon}</span><strong>{name}</strong></button>)}</div>
+          </div>
         </section>
 
-        <section className="mx-auto max-w-[1440px] px-4 py-6 sm:px-6"><div className="mb-4 flex items-end justify-between gap-3"><div><p className="text-xs font-black uppercase tracking-[.18em] text-[#2574d9]">Ofertas selecionadas</p><h2 className="mt-1 text-2xl font-extrabold sm:text-3xl">Mais vendidos da semana</h2><p className="mt-1 text-sm text-[#6b7280]">Pague via Pix com 10% de desconto no preço cheio</p></div><button onClick={() => setCategory("Todos")} className="hidden rounded-lg bg-[#2574d9] px-4 py-2 text-sm font-bold text-white sm:block">Todos</button></div><div className="grid grid-cols-2 gap-px overflow-hidden rounded-xl border border-[#e5e7eb] bg-[#e5e7eb] md:grid-cols-4">{visible.map((product) => { const fullPriceCents = Math.round(product.fullPrice * 100); const pixPriceCents = Math.floor(fullPriceCents * .9); return <article className="marketplace-product-card bg-white p-3 sm:p-4" key={product.id}><button className="marketplace-product-visual" onClick={() => startPixCheckout(product)} aria-label={`Pagar ${product.title} via Pix`}>{product.image ? <img src={product.image} alt={product.title} /> : null}<span className="marketplace-ad">Oferta</span><span className="marketplace-cart"><ShoppingCart size={19} /></span></button><p className="mt-3 text-[11px] font-bold uppercase tracking-wide text-[#6b7280]">{product.category}</p><h3 className="mt-1 line-clamp-2 min-h-[40px] text-[15px] font-medium leading-5 sm:text-[17px]">{product.title}</h3><p className="mt-1 text-xs text-[#6b7280]">{product.seller}</p><p className="mt-1 text-xs text-[#2574d9]">★ <strong>{product.rating}</strong> · {product.sold}</p><div className="mt-3 flex flex-wrap items-center gap-2"><span className="text-xs text-[#6b7280] line-through">{formatBRL(fullPriceCents)}</span><b className="rounded bg-[#08a65c] px-1.5 py-1 text-xs text-white">10% OFF</b></div><div className="text-xl font-bold sm:text-2xl">{formatBRL(pixPriceCents)}</div><p className="mt-1 text-xs font-medium text-[#526174]"><CreditCard size={13} className="mr-1 inline-block align-[-2px]" />12x de {formatBRL(Math.round(fullPriceCents / 12))} via Mercado Pago</p><p className="mt-1 text-xs font-semibold text-[#08a65c]">Preço Pix + frete calculado no checkout</p><button onClick={() => startPixCheckout(product)} disabled={directSalesLoading || !pixAvailable} className="marketplace-buy mt-3 w-full rounded-lg px-3 py-3 text-xs font-extrabold text-white sm:text-sm disabled:cursor-not-allowed disabled:opacity-60">{directSalesLoading ? "Verificando Pix..." : pixAvailable ? "Pix · 10% OFF" : "Pix em homologação"}</button><a href={product.url} target="_blank" rel="noopener noreferrer" className="mt-2 flex items-center justify-center gap-1 text-xs font-semibold text-[#2574d9] underline underline-offset-2" aria-label={`Parcelar ${product.title} via Mercado Pago`}><CreditCard size={14} /> Parcelar via Mercado Pago <ExternalLink size={12} /></a><p className="mt-2 text-center text-[10px] text-[#9ca3af]">{product.badge}</p></article>; })}</div>{visible.length === 0 && <div className="rounded-xl bg-white p-12 text-center">Nenhum produto encontrado.</div>}</section>
+        <section id="ofertas" className="mx-auto max-w-[1440px] scroll-mt-24 px-4 py-6 sm:px-6">
+          <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <p className="text-xs font-black uppercase tracking-[.18em] text-[#2574d9]">Ofertas selecionadas</p>
+              <h2 className="mt-1 text-2xl font-extrabold sm:text-3xl">Mais vendidos da semana</h2>
+              <p className="mt-1 max-w-2xl text-sm text-[#6b7280]">Pix 10% é no checkout direto na TOCA DO MACHO (quando disponível); parcelar/ML é pago no Mercado Livre.</p>
+            </div>
+            <div className="flex flex-wrap items-center gap-2">
+              <label className="flex items-center gap-2 text-xs font-semibold text-[#4b5563]">
+                <span>Ordenar</span>
+                <select
+                  value={sortMode}
+                  onChange={(event) => setSortMode(event.target.value as SortMode)}
+                  className="rounded-lg border border-[#d1d5db] bg-white px-3 py-2 text-sm font-bold text-[#111827] outline-none focus:border-[#2574d9]"
+                  aria-label="Ordenar ofertas"
+                >
+                  <option value="relevancia">Relevância</option>
+                  <option value="preco">Preço (menor → maior)</option>
+                </select>
+              </label>
+              <button onClick={() => setCategory("Todos")} className="rounded-lg bg-[#2574d9] px-4 py-2 text-sm font-bold text-white">Todos</button>
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-px overflow-hidden rounded-xl border border-[#e5e7eb] bg-[#e5e7eb] md:grid-cols-4">
+            {visible.map((product) => {
+              const fullPriceCents = Math.round(product.fullPrice * 100);
+              const pixPriceCents = Math.floor(fullPriceCents * .9);
+              return (
+                <article className="marketplace-product-card bg-white p-3 sm:p-4" key={product.id}>
+                  <button className="marketplace-product-visual" onClick={() => startPixCheckout(product)} aria-label={`Pagar ${product.title} via Pix`}>
+                    {product.image ? <img src={product.image} alt={product.title} /> : null}
+                    <span className="marketplace-ad">Oferta</span>
+                    <span className="marketplace-cart"><ShoppingCart size={19} /></span>
+                  </button>
+                  <p className="mt-3 text-[11px] font-bold uppercase tracking-wide text-[#6b7280]">{product.category}</p>
+                  <h3 className="mt-1 line-clamp-2 min-h-[40px] text-[15px] font-medium leading-5 sm:text-[17px]">{product.title}</h3>
+                  <p className="mt-1 text-xs text-[#6b7280]">{product.seller}</p>
+                  <p className="mt-1 text-xs text-[#2574d9]">★ <strong>{product.rating}</strong> · {product.sold}</p>
+                  <div className="mt-3 flex flex-wrap items-center gap-2">
+                    <span className="text-xs text-[#6b7280] line-through">{formatBRL(fullPriceCents)}</span>
+                    <b className="rounded bg-[#08a65c] px-1.5 py-1 text-xs text-white">10% OFF</b>
+                  </div>
+                  <div className="text-xl font-bold sm:text-2xl">{formatBRL(pixPriceCents)}</div>
+                  <p className="mt-1 text-xs font-semibold text-[#08a65c]">Preço Pix + frete calculado no checkout</p>
+                  <button onClick={() => startPixCheckout(product)} disabled={directSalesLoading || !pixAvailable} className="marketplace-buy mt-3 w-full rounded-lg px-3 py-3 text-xs font-extrabold text-white sm:text-sm disabled:cursor-not-allowed disabled:opacity-60">
+                    {directSalesLoading ? "Verificando Pix..." : pixAvailable ? "Pix · 10% OFF" : "Pix em homologação"}
+                  </button>
+                  <a
+                    href={product.url}
+                    target="_blank"
+                    rel="noopener noreferrer sponsored"
+                    className="mt-2 flex items-center justify-center gap-1 text-xs font-semibold text-[#2574d9] underline underline-offset-2"
+                    aria-label={`Ver ${product.title} no Mercado Livre`}
+                  >
+                    Ver no Mercado Livre <ExternalLink size={12} />
+                  </a>
+                  <p className="mt-1 text-center text-[10px] leading-snug text-[#9ca3af]">Link afiliado — você pode cair na página do vendedor/perfil antes do produto.</p>
+                  <p className="mt-2 text-center text-[10px] text-[#9ca3af]">{product.badge}</p>
+                </article>
+              );
+            })}
+          </div>
+          {visible.length === 0 && <div className="rounded-xl bg-white p-12 text-center">Nenhum produto encontrado.</div>}
+        </section>
       </main>
-      <footer className="pb-24 pt-2 text-center"><a href="/beleza-mais-vendidos.html" className="text-[9px] text-[#9ca3af] underline underline-offset-2">Ver catálogo ampliado de ofertas</a></footer>
-      <nav className="marketplace-bottom-nav fixed inset-x-0 bottom-0 z-30 grid grid-cols-5 border-t border-[#e5e7eb] bg-white px-2 py-2 text-center text-[11px] font-semibold md:hidden"><a href="#top">⌂<span>Início</span></a><a href="#categorias">▦<span>Categorias</span></a><a href="#carrinho">🛒<span>Carrinho</span></a><a href="#ofertas">▷<span>Ofertas</span></a><a href="#menu">☰<span>Mais</span></a></nav>
+
+      <footer className="border-t border-[#e5e7eb] bg-white px-4 pb-28 pt-8 text-center sm:px-6">
+        <div className="mx-auto flex max-w-[720px] flex-wrap items-center justify-center gap-x-4 gap-y-2 text-xs font-semibold text-[#4b5563]">
+          <a href="/politica-de-privacidade.html" className="underline underline-offset-2 hover:text-[#111827]">Política de privacidade</a>
+          <a href="/termos-de-venda.html" className="underline underline-offset-2 hover:text-[#111827]">Termos de venda</a>
+          <a href="/beleza-mais-vendidos.html" className="underline underline-offset-2 hover:text-[#111827]">Catálogo ampliado</a>
+        </div>
+        <p className="mx-auto mt-3 max-w-xl text-[11px] leading-5 text-[#9ca3af]">Links afiliados do Mercado Livre: podemos receber comissão por compras qualificadas, sem custo extra para você. O Pix com 10% é exclusivo do checkout direto na TOCA DO MACHO, quando disponível.</p>
+      </footer>
+
+      <nav className="marketplace-bottom-nav fixed inset-x-0 bottom-0 z-30 grid grid-cols-5 border-t border-[#e5e7eb] bg-white px-2 py-2 text-center text-[11px] font-semibold md:hidden">
+        <a href="#top">⌂<span>Início</span></a>
+        <a href="#categorias">▦<span>Categorias</span></a>
+        <a href="#ofertas">🛒<span>Carrinho</span></a>
+        <a href="#ofertas">▷<span>Ofertas</span></a>
+        <a href="#categorias">☰<span>Mais</span></a>
+      </nav>
 
       {pixOpen && selectedProduct && <div className="fixed inset-0 z-50 overflow-y-auto bg-[#111827]/60 p-4 sm:p-8" role="presentation" onMouseDown={(event) => event.target === event.currentTarget && setPixOpen(false)}><section className="mx-auto max-w-2xl rounded-2xl bg-white p-5 shadow-2xl sm:p-8" role="dialog" aria-modal="true" aria-labelledby="pix-title"><div className="flex items-start justify-between gap-4"><div><p className="text-xs font-black uppercase tracking-[.18em] text-[#08a65c]">Pagamento principal · Mercado Pago</p><h2 id="pix-title" className="mt-1 text-2xl font-extrabold">Pix com 10% de desconto</h2><p className="mt-1 text-sm text-[#6b7280]">{selectedProduct.title}</p></div><button className="marketplace-icon" onClick={() => setPixOpen(false)} aria-label="Fechar"><X size={21} /></button></div>{pixPayment ? <div className="mt-6 text-center"><p className="text-sm font-semibold text-[#08a65c]">Pedido {pixPayment.orderNumber} criado</p><p className="mt-2 text-sm text-[#6b7280]">Escaneie o QR Code ou copie o código Pix para concluir o pagamento.</p><div className="pix-qr-wrap mx-auto mt-4"><img src={`data:image/png;base64,${pixPayment.qrCodeBase64}`} alt="QR Code Pix" /></div><div className="pix-code-box mt-4"><span>{pixPayment.qrCode}</span><button onClick={copyPix} className="pix-copy-button"><Copy size={15} /> Copiar</button></div><div className="mt-4 flex items-center justify-between border-t pt-4 text-sm"><span>Total com 10% OFF</span><strong className="text-xl">{formatBRL(pixPayment.totalCents)}</strong></div></div> : <form className="mt-6" onSubmit={submitPix}><div className="mb-5 rounded-xl bg-[#f0fbf5] p-4 text-sm"><strong>Preço cheio: {formatBRL(Math.round(selectedProduct.fullPrice * 100))}</strong><br /><span className="text-[#087c48]">Total Pix com 10% OFF: {formatBRL(Math.floor(Math.round(selectedProduct.fullPrice * 100) * .9))}</span><br /><span className="text-[#526174]">Frete: {shippingQuote ? formatBRL(shippingQuote.priceCents) : "a calcular pelo CEP"}</span></div><div className="grid gap-3 sm:grid-cols-2">{([["name", "Nome completo", "text"], ["email", "E-mail", "email"], ["emailConfirmation", "Confirme o e-mail", "email"], ["phone", "WhatsApp", "tel"], ["postalCode", "CEP", "text"], ["street", "Rua", "text"], ["addressNumber", "Número", "text"], ["complement", "Complemento (opcional)", "text"], ["neighborhood", "Bairro", "text"], ["city", "Cidade", "text"], ["state", "UF", "text"]] as const).map(([field, label, type]) => <label key={field} className={field === "street" ? "sm:col-span-2" : ""}><span className="mb-1 block text-xs font-bold text-[#374151]">{label}</span><input required={field !== "complement"} type={type} value={String(form[field])} onChange={(event) => updateForm(field, event.target.value)} className="w-full rounded-lg border border-[#d1d5db] px-3 py-2.5 text-sm outline-none focus:border-[#08a65c]" /></label>)}</div><div className="mt-4 rounded-lg bg-[#f0f7ff] p-3 text-sm"><strong>Frete</strong> {shippingLoading ? "Calculando..." : shippingQuote ? `${formatBRL(shippingQuote.priceCents)} · ${shippingQuote.deliveryEstimate}` : "Informe seu CEP de 8 dígitos"}{shippingQuote && <span className="block text-xs text-[#6b7280]">{shippingQuote.region}</span>}{shippingError && <span className="block text-xs text-[#b42318]">Confira o CEP informado.</span>}</div><label className="mt-4 flex gap-2 text-xs leading-5 text-[#4b5563]"><input type="checkbox" checked={form.consentTerms} onChange={(event) => updateForm("consentTerms", event.target.checked)} /> Aceito os <a className="underline" href="/termos-de-venda.html" target="_blank">termos de venda</a>.</label><label className="mt-2 flex gap-2 text-xs leading-5 text-[#4b5563]"><input type="checkbox" checked={form.consentPrivacy} onChange={(event) => updateForm("consentPrivacy", event.target.checked)} /> Aceito a <a className="underline" href="/politica-de-privacidade.html" target="_blank">política de privacidade</a>.</label><button disabled={pixMutation.isPending} className="marketplace-buy mt-5 w-full rounded-lg px-4 py-3.5 text-sm font-extrabold text-white disabled:opacity-60">{pixMutation.isPending ? "Gerando Pix..." : "Gerar Pix com 10% OFF"}</button><p className="mt-3 text-center text-[11px] text-[#9ca3af]">O pedido e o pagamento são processados pelo Mercado Pago. Seus dados são usados para pagamento e entrega.</p></form>}</section></div>}
     </div>
